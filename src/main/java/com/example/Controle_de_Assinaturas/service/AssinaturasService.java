@@ -16,7 +16,7 @@ public class AssinaturasService {
         this.assinaturasRepository = assinaturasRepository;
     }
 
-    public void salvar(AssinaturasDto dto) {
+    public Entity salvar(AssinaturasDto dto) {
         Entity novaAssinatura = new Entity();
         novaAssinatura.setServico(dto.servico());
         novaAssinatura.setValor(dto.valor());
@@ -28,14 +28,14 @@ public class AssinaturasService {
             throw new IllegalArgumentException("Dia de vencimento invalido");
         }
 
-        assinaturasRepository.save(novaAssinatura);
+        return assinaturasRepository.save(novaAssinatura);
     }
 
     public List<Entity> listarAssinaturas() {
         return assinaturasRepository.findAll();
     }
 
-    public void atualizar(AssinaturasDto dto) {
+    public Entity atualizar(AssinaturasDto dto) {
         Entity assinaturaAtualizada = new Entity();
         assinaturaAtualizada.setServico(dto.servico());
         assinaturaAtualizada.setValor(dto.valor());
@@ -47,7 +47,7 @@ public class AssinaturasService {
             throw new IllegalArgumentException("Dia de vencimento invalido");
         }
 
-        assinaturasRepository.save(assinaturaAtualizada);
+        return assinaturasRepository.save(assinaturaAtualizada);
     }
 
     public void deletar(Long id){
