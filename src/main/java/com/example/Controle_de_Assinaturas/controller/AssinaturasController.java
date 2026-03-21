@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class AssinaturasController {
 
     private final AssinaturasService assinaturasService;
@@ -29,14 +30,14 @@ public class AssinaturasController {
         return ResponseEntity.ok(assinaturasService.listarAssinaturas());
     }
 
-    @PutMapping
-    public ResponseEntity<Entity> atualizar(@RequestBody AssinaturasDto dto) {
-        Entity assinaturaAtualizada = assinaturasService.salvar(dto);
+    @PutMapping("/{id}")
+    public ResponseEntity<Entity> atualizar(@PathVariable Long id, @RequestBody AssinaturasDto dto) {
+        Entity assinaturaAtualizada = assinaturasService.atualizar(id, dto);
         return ResponseEntity.ok(assinaturaAtualizada);
     }
 
-    @DeleteMapping
-    public void deletar(@PathVariable long id) {
+    @DeleteMapping("/{id}")
+    public void deletar(@PathVariable Long id) {
         assinaturasService.deletar(id);
     }
 }

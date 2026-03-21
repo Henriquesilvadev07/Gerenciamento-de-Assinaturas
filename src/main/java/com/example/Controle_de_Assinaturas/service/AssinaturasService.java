@@ -35,8 +35,9 @@ public class AssinaturasService {
         return assinaturasRepository.findAll();
     }
 
-    public Entity atualizar(AssinaturasDto dto) {
+    public Entity atualizar(Long id, AssinaturasDto dto) {
         Entity assinaturaAtualizada = new Entity();
+        assinaturaAtualizada.setId(id);
         assinaturaAtualizada.setServico(dto.servico());
         assinaturaAtualizada.setValor(dto.valor());
         assinaturaAtualizada.setDataVencimento(dto.dataVencimento());

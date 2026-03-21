@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RickSubs™ | Financial Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a; --surface: #141414; --primary: #e50914;
+            --text-main: #ffffff; --text-dim: #a3a3a3; --border: #333333;
+            --success: #00ff88; --warning: #f1c40f;
+        }
+        [data-theme="light"] {
+            --bg: #f5f5f7; --surface: #ffffff; --text-main: #1d1d1f;
+            --text-dim: #86868b; --border: #d2d2d7;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; transition: 0.4s; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; animation: fadeInUp 0.6s ease-out; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .logo { font-size: 22px; font-weight: 800; }
+        .logo span { color: var(--primary); }
+
+        .theme-switch {
+            position: relative; width: 50px; height: 26px; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 4px;
+        }
+        .theme-switch .toggle-circle {
+            position: absolute; width: 20px; height: 20px; background: var(--primary); border-radius: 50%; transition: 0.3s; left: 3px;
+        }
+        [data-theme="light"] .theme-switch .toggle-circle { left: 25px; }
+
+        .dashboard-grid { display: grid; grid-template-columns: 320px 1fr; gap: 30px; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 25px; }
+
+        .summary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .summary-box { background: var(--surface); padding: 20px; border-radius: 12px; border-left: 4px solid var(--border); }
+        .summary-box.debt { border-left-color: var(--primary); }
+        .summary-box label { font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700; }
+        .summary-box h2 { font-size: 26px; margin: 5px 0 0 0; font-weight: 800; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; font-size: 11px; color: var(--text-dim); }
+        .form-control { width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text-main); box-sizing: border-box; }
+
+        .btn-rick { background: var(--primary); color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 12px; margin-top: 8px; }
+        .btn-rick.edit-mode { background: var(--warning); color: #000; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 15px 12px; font-size: 10px; color: var(--text-dim); border-bottom: 1px solid var(--border); text-transform: uppercase; }
+        td { padding: 15px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+
+        .status-dot { height: 7px; width: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .dot-ATIVO { background: var(--success); }
+        .dot-SUSPENSO { background: var(--warning); }
+        .dot-CANCELADO { background: var(--primary); }
+
+        .overdue-tag { color: var(--primary); font-size: 9px; font-weight: 800; margin-left: 5px; border: 1px solid var(--primary); padding: 1px 4px; border-radius: 3px; }
+
+        .action-cell { text-align: right; white-space: nowrap; }
+        .btn-action {
+            background: none; border: none; padding: 0; margin-left: 12px;
+            cursor: pointer; color: var(--text-dim); transition: 0.2s;
+            display: inline-flex; align-items: center; vertical-align: middle;
+        }
+        .btn-action:hover { color: var(--text-main); }
+        .btn-action svg { width: 14px; height: 14px; fill: currentColor; }
+
+        footer { margin-top: 40px; padding: 20px 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-dim); }
+        .tech-badge { background: rgba(255, 255, 255, 0.05); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); font-size: 9px; }
+    </style>
+</head>
+<body data-theme="dark">
+
+<div class="container">
+    <header>
+        <div class="logo">RICK<span>SUBS.</span></div>
+        <div class="theme-switch" onclick="toggleTheme()"><span>🌙</span><span>☀️</span><div class="toggle-circle"></div></div>
+    </header>
+
+    <div class="dashboard-grid">
+        <aside>
+            <div class="card">
+                <h3 id="formTitle" style="margin: 0 0 15px 0; font-size: 16px;">Nova Assinatura</h3>
+                <input type="hidden" id="assinaturaId">
+                <div class="form-group"><label>Serviço</label><input type="text" id="servico" class="form-control"></div>
+                <div class="form-group"><label>Valor (R$)</label><input type="number" id="valor" class="form-control"></div>
+                <div class="form-group"><label>Vencimento</label><select id="dataVencimento" class="form-control"></select></div>
+                <div class="form-group"><label>Status</label>
+                    <select id="status" class="form-control">
+                        <option value="ATIVO">Ativo</option>
+                        <option value="SUSPENSO">Suspenso</option>
+                        <option value="CANCELADO">Cancelado</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Plano</label><input type="text" id="plano" class="form-control"></div>
+                <button id="btnSubmit" class="btn-rick" onclick="handleSalvar()">Registrar</button>
+                <button id="btnCancelar" class="btn-rick" style="display:none; background:none; border:1px solid var(--border);" onclick="resetForm()">Cancelar</button>
+            </div>
+        </aside>
+
+        <main>
+            <div class="summary-row">
+                <div class="summary-box"><label>Total Mensal</label><h2 id="totalValor">R$ 0,00</h2></div>
+                <div class="summary-box debt"><label>Pendente ⚠️</label><h2 id="totalAtraso" style="color: var(--primary);">R$ 0,00</h2></div>
+            </div>
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <table>
+                    <thead><tr><th>Serviço</th><th>Vencimento</th><th>Valor</th><th>Status</th><th style="text-align: right; padding-right: 12px;">Ações</th></tr></thead>
+                    <tbody id="tabelaCorpo"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div>Desenvolvido por <span>Henrique Silva de Carvalho</span></div>
+        <div style="display: flex; gap: 8px;">
+            <span class="tech-badge">Java 21</span>
+            <span class="tech-badge">Spring Boot 3</span>
+            <span class="tech-badge">PostgreSQL</span>
+        </div>
+    </footer>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:8080/api';
+    const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const hoje = new Date();
+    const diaHoje = hoje.getDate();
+    let editMode = false;
+
+    const iconEdit = `<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
+    const iconDelete = `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`;
+
+    // Popula o select de dias
+    const select = document.getElementById('dataVencimento');
+    for(let i=1; i<=31; i++) {
+        let opt = document.createElement('option'); opt.value = i; opt.innerHTML = `Dia ${i}`;
+        select.appendChild(opt);
+    }
+
+    async function listar() {
+        try {
+            const resp = await fetch(API_URL);
+            const dados = await resp.json();
+            const corpo = document.getElementById('tabelaCorpo');
+
+            if (!corpo) return;
+
+            let tMensal = 0;
+            let tAtraso = 0;
+            let html = "";
+
+            if (!dados || dados.length === 0) {
+                corpo.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-dim)">Nenhuma assinatura ativa.</td></tr>';
+                return;
+            }
+
+            dados.forEach(a => {
+                // Sanitização: garante que os campos existam para não quebrar o JS
+                const servico = a.servico || 'Sem Nome';
+                const valor = a.valor || 0;
+                const vencimento = a.dataVencimento || 1;
+                const status = a.status || 'ATIVO';
+                const plano = a.plano || '-';
+
+                if(status === 'ATIVO') tMensal += valor;
+
+                let mExib = meses[hoje.getMonth()];
+                let isP = false;
+
+                // Lógica de Pendência solicitada
+                if (status === 'SUSPENSO' || status === 'CANCELADO') {
+                    isP = true;
+                    tAtraso += valor;
+                } else if (status === 'ATIVO' && vencimento < diaHoje) {
+                    mExib = meses[(hoje.getMonth() + 1) % 12];
+                }
+
+                html += `
+                    <tr>
+                        <td><div style="font-weight:700;">${servico}</div><div style="font-size:10px; color:var(--text-dim)">${plano}</div></td>
+                        <td>${vencimento} de ${mExib} ${isP ? '<span class="overdue-tag">PENDENTE</span>' : ''}</td>
+                        <td style="font-weight:600;">R$ ${valor.toFixed(2)}</td>
+                        <td><span class="status-dot dot-${status}"></span><span style="font-size:10px; font-weight:700;">${status}</span></td>
+                        <td class="action-cell">
+                            <button class="btn-action" title="Editar" onclick='prepEdit(${JSON.stringify(a)})'>${iconEdit}</button>
+                            <button class="btn-action" title="Excluir" onclick="deletar(${a.id})">${iconDelete}</button>
+                        </td>
+                    </tr>`;
+            });
+
+            corpo.innerHTML = html;
+            document.getElementById('totalValor').innerText = `R$ ${tMensal.toFixed(2)}`;
+            document.getElementById('totalAtraso').innerText = `R$ ${tAtraso.toFixed(2)}`;
+
+        } catch (err) {
+            console.error("Erro ao listar:", err);
+        }
+    }
+
+    async function handleSalvar() {
+        const id = document.getElementById('assinaturaId').value;
+        const dto = {
+            servico: document.getElementById('servico').value,
+            valor: parseFloat(document.getElementById('valor').value),
+            dataVencimento: parseInt(document.getElementById('dataVencimento').value),
+            status: document.getElementById('status').value,
+            plano: document.getElementById('plano').value
+        };
+
+        try {
+            const method = editMode ? 'PUT' : 'POST';
+            const url = editMode ? `${API_URL}/${id}` : API_URL;
+
+            await fetch(url, {
+                method: method,
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(dto)
+            });
+
+            resetForm();
+            listar();
+        } catch (e) {
+            console.error("Erro ao salvar:", e);
+        }
+    }
+
+    function prepEdit(o) {
+        editMode = true;
+        document.getElementById('formTitle').innerText = "Editar";
+        document.getElementById('btnSubmit').innerText = "Atualizar";
+        document.getElementById('btnSubmit').classList.add('edit-mode');
+        document.getElementById('btnCancelar').style.display = "block";
+
+        document.getElementById('assinaturaId').value = o.id;
+        document.getElementById('servico').value = o.servico;
+        document.getElementById('valor').value = o.valor;
+        document.getElementById('dataVencimento').value = o.dataVencimento;
+        document.getElementById('status').value = o.status;
+        document.getElementById('plano').value = o.plano;
+    }
+
+    function resetForm() {
+        editMode = false;
+        document.getElementById('formTitle').innerText = "Nova Assinatura";
+        document.getElementById('btnSubmit').innerText = "Registrar";
+        document.getElementById('btnSubmit').classList.remove('edit-mode');
+        document.getElementById('btnCancelar').style.display = "none";
+        document.getElementById('assinaturaId').value = '';
+        document.getElementById('servico').value = '';
+        document.getElementById('valor').value = '';
+        document.getElementById('plano').value = '';
+    }
+
+    async function deletar(id) {
+        if(confirm("Deseja remover esta assinatura?")) {
+            try {
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                listar();
+            } catch (e) {
+                console.error("Erro ao deletar:", e);
+            }
+        }
+    }
+
+    function toggleTheme() {
+        const b = document.body;
+        const current = b.getAttribute('data-theme');
+        b.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+
+    // Chama a lista ao carregar
+    listar();
+</script>
+</body>
+</html>
