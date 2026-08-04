@@ -52,6 +52,8 @@ public class AssinaturasService {
     }
 
     public void deletar(Long id){
-        assinaturasRepository.deleteById(id);
+        if (assinaturasRepository.existsById(id)) {
+            assinaturasRepository.deleteById(id);
+        }
     }
 }
