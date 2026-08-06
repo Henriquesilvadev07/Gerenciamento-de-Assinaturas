@@ -24,7 +24,7 @@ public class AssinaturasModel {
     private int dataVencimento;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private StatusEnum status;
 
     @Column(nullable = false)
     private String plano;

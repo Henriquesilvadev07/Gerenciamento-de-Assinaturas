@@ -21,7 +21,7 @@ public class AssinaturasService {
         novaAssinatura.setServico(dto.servico());
         novaAssinatura.setValor(dto.valor());
         novaAssinatura.setDataVencimento(dto.dataVencimento());
-        novaAssinatura.setStatus(dto.status());
+        novaAssinatura.setStatus(dto.statusEnum());
         novaAssinatura.setPlano(dto.plano());
 
         if (dto.dataVencimento() < 1 || dto.dataVencimento() > 31) {
@@ -41,7 +41,7 @@ public class AssinaturasService {
         assinaturaAtualizada.setServico(dto.servico());
         assinaturaAtualizada.setValor(dto.valor());
         assinaturaAtualizada.setDataVencimento(dto.dataVencimento());
-        assinaturaAtualizada.setStatus(dto.status());
+        assinaturaAtualizada.setStatus(dto.statusEnum());
         assinaturaAtualizada.setPlano(dto.plano());
 
         if (dto.dataVencimento() < 1 || dto.dataVencimento() > 31 ) {

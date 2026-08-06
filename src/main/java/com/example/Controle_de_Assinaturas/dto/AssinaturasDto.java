@@ -1,12 +1,12 @@
 package com.example.Controle_de_Assinaturas.dto;
 
-import com.example.Controle_de_Assinaturas.model.Status;
+import com.example.Controle_de_Assinaturas.model.StatusEnum;
 
 public record AssinaturasDto(
         String servico,
         Double valor,
         int dataVencimento,
-        Status status,
+        StatusEnum statusEnum,
         String plano
 ) {
 }
