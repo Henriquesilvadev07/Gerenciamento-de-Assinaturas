@@ -3,41 +3,45 @@ package com.example.Controle_de_Assinaturas.controller;
 import com.example.Controle_de_Assinaturas.dto.AssinaturasDto;
 import com.example.Controle_de_Assinaturas.model.AssinaturasModel;
 import com.example.Controle_de_Assinaturas.service.AssinaturasService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/assinatuas")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class AssinaturasController {
 
     private final AssinaturasService assinaturasService;
 
-    public AssinaturasController(AssinaturasService assinaturasService) {
-        this.assinaturasService = assinaturasService;
-    }
 
     @PostMapping
-    public ResponseEntity<AssinaturasModel> salvar(@RequestBody AssinaturasDto dto) {
-        AssinaturasModel novaAssinatura = assinaturasService.salvar(dto);
-        return ResponseEntity.ok(novaAssinatura);
+    public ResponseEntity<AssinaturasModel> salvar(@RequestBody @Valid AssinaturasDto dto, UriComponentsBuilder uriBuilder) {
+        var assinaturas = assinaturasService.salvar(dto);
+        var uri = uriBuilder.path("/assinaturas/{id}").buildAndExpand(assinaturas.getId()).toUri();
+        return ResponseEntity.created(uri).body(assinaturas);
     }
 
     @GetMapping
     public ResponseEntity<List<AssinaturasModel>> listar() {
-        return ResponseEntity.ok(assinaturasService.listarAssinaturas());
+        var assinaturas = assinaturasService.listarAssinaturas();
+        return ResponseEntity.status(200).body(assinaturas);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AssinaturasModel> atualizar(@PathVariable Long id, @RequestBody AssinaturasDto dto) {
-        AssinaturasModel assinaturaAtualizada = assinaturasService.atualizar(id, dto);
-        return ResponseEntity.ok(assinaturaAtualizada);
+    public ResponseEntity<AssinaturasModel> atualizar(@PathVariable Long id, @RequestBody @Valid AssinaturasDto dto) {
+        var assinaturas = assinaturasService.atualizar(id, dto);
+        return ResponseEntity.status(200).body(assinaturas);
     }
 
     @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
         assinaturasService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }
