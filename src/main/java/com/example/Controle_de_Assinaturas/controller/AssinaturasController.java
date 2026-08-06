@@ -1,7 +1,7 @@
 package com.example.Controle_de_Assinaturas.controller;
 
 import com.example.Controle_de_Assinaturas.dto.AssinaturasDto;
-import com.example.Controle_de_Assinaturas.model.Entity;
+import com.example.Controle_de_Assinaturas.model.AssinaturasModel;
 import com.example.Controle_de_Assinaturas.service.AssinaturasService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,19 +20,19 @@ public class AssinaturasController {
     }
 
     @PostMapping
-    public ResponseEntity<Entity> salvar(@RequestBody AssinaturasDto dto) {
-        Entity novaAssinatura = assinaturasService.salvar(dto);
+    public ResponseEntity<AssinaturasModel> salvar(@RequestBody AssinaturasDto dto) {
+        AssinaturasModel novaAssinatura = assinaturasService.salvar(dto);
         return ResponseEntity.ok(novaAssinatura);
     }
 
     @GetMapping
-    public ResponseEntity<List<Entity>> listar() {
+    public ResponseEntity<List<AssinaturasModel>> listar() {
         return ResponseEntity.ok(assinaturasService.listarAssinaturas());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Entity> atualizar(@PathVariable Long id, @RequestBody AssinaturasDto dto) {
-        Entity assinaturaAtualizada = assinaturasService.atualizar(id, dto);
+    public ResponseEntity<AssinaturasModel> atualizar(@PathVariable Long id, @RequestBody AssinaturasDto dto) {
+        AssinaturasModel assinaturaAtualizada = assinaturasService.atualizar(id, dto);
         return ResponseEntity.ok(assinaturaAtualizada);
     }
 

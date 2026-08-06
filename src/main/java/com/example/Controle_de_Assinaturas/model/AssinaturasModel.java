@@ -1,9 +1,6 @@
 package com.example.Controle_de_Assinaturas.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,20 +10,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "assinaturas")
-public class Entity {
+public class AssinaturasModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String servico;
 
     private Double valor;
 
     private int dataVencimento;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(nullable = false)
     private String plano;
 
 }
