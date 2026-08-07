@@ -27,8 +27,12 @@ public class AssinaturasService {
         if (dto.dataVencimento() < 1 || dto.dataVencimento() > 31) {
             throw new IllegalArgumentException("Dia de vencimento invalido");
         }
-
         return assinaturasRepository.save(novaAssinatura);
+    }
+
+    public AssinaturasModel acharPorId(Long id) {
+        return assinaturasRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("Id nao encontrado, tente algum ID valido"));
     }
 
     public List<AssinaturasModel> listarAssinaturas() {
@@ -36,7 +40,9 @@ public class AssinaturasService {
     }
 
     public AssinaturasModel atualizar(Long id, AssinaturasDto dto) {
-        AssinaturasModel assinaturaAtualizada = new AssinaturasModel();
+        AssinaturasModel assinaturaAtualizada = assinaturasRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Id nao encontrado, Tente um ID valido")
+        );
         assinaturaAtualizada.setId(id);
         assinaturaAtualizada.setServico(dto.servico());
         assinaturaAtualizada.setValor(dto.valor());
@@ -54,6 +60,8 @@ public class AssinaturasService {
     public void deletar(Long id){
         if (assinaturasRepository.existsById(id)) {
             assinaturasRepository.deleteById(id);
+        }else {
+            throw new RuntimeException("Id nao encontrado, Tente um ID valido");
         }
     }
 }
