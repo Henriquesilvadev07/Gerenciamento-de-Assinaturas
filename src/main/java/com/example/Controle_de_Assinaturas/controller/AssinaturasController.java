@@ -33,6 +33,12 @@ public class AssinaturasController {
         return ResponseEntity.status(200).body(assinaturas);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<AssinaturasModel> acharPorId(@RequestParam Long id) {
+        var assinaturas = assinaturasService.acharPorId(id);
+        return ResponseEntity.status(200).body(assinaturas);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<AssinaturasModel> atualizar(@PathVariable Long id, @RequestBody @Valid AssinaturasDto dto) {
         var assinaturas = assinaturasService.atualizar(id, dto);
