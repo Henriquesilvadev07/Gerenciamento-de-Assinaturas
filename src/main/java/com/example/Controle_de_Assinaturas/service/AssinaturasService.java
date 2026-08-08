@@ -3,32 +3,34 @@ package com.example.Controle_de_Assinaturas.service;
 import com.example.Controle_de_Assinaturas.dto.AssinaturasDto;
 import com.example.Controle_de_Assinaturas.model.AssinaturasModel;
 import com.example.Controle_de_Assinaturas.repository.AssinaturasRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AssinaturasService {
 
     private final AssinaturasRepository assinaturasRepository;
 
-    public AssinaturasService(AssinaturasRepository assinaturasRepository) {
-        this.assinaturasRepository = assinaturasRepository;
-    }
-
     public AssinaturasModel salvar(AssinaturasDto dto) {
-        AssinaturasModel novaAssinatura = new AssinaturasModel();
-        novaAssinatura.setServico(dto.servico());
-        novaAssinatura.setValor(dto.valor());
-        novaAssinatura.setDataVencimento(dto.dataVencimento());
-        novaAssinatura.setStatus(dto.statusEnum());
-        novaAssinatura.setPlano(dto.plano());
-
+        AssinaturasModel assinatura = new AssinaturasModel();
         if (dto.dataVencimento() < 1 || dto.dataVencimento() > 31) {
             throw new IllegalArgumentException("Dia de vencimento invalido");
         }
+        assinatura.setServico(dto.servico());
+        assinatura.setValor(dto.valor());
+        assinatura.setDataVencimento(dto.dataVencimento());
+        assinatura.setStatus(dto.statusEnum());
+        assinatura.setPlano(dto.plano());
+        return assinaturasRepository.save(assinatura);
+    }
 
-        return assinaturasRepository.save(novaAssinatura);
+    public AssinaturasModel acharPorId(Long id) {
+        return assinaturasRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Id nao encontrado, tente algum ID valido"));
     }
 
     public List<AssinaturasModel> listarAssinaturas() {
@@ -36,24 +38,25 @@ public class AssinaturasService {
     }
 
     public AssinaturasModel atualizar(Long id, AssinaturasDto dto) {
-        AssinaturasModel assinaturaAtualizada = new AssinaturasModel();
-        assinaturaAtualizada.setId(id);
-        assinaturaAtualizada.setServico(dto.servico());
-        assinaturaAtualizada.setValor(dto.valor());
-        assinaturaAtualizada.setDataVencimento(dto.dataVencimento());
-        assinaturaAtualizada.setStatus(dto.statusEnum());
-        assinaturaAtualizada.setPlano(dto.plano());
-
+        AssinaturasModel assinatura = assinaturasRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Id nao encontrado, Tente um ID valido")
+        );
         if (dto.dataVencimento() < 1 || dto.dataVencimento() > 31 ) {
             throw new IllegalArgumentException("Dia de vencimento invalido");
         }
-
-        return assinaturasRepository.save(assinaturaAtualizada);
+        assinatura.setServico(dto.servico());
+        assinatura.setValor(dto.valor());
+        assinatura.setDataVencimento(dto.dataVencimento());
+        assinatura.setStatus(dto.statusEnum());
+        assinatura.setPlano(dto.plano());
+        return assinaturasRepository.saveAndFlush(assinatura);
     }
 
     public void deletar(Long id){
         if (assinaturasRepository.existsById(id)) {
             assinaturasRepository.deleteById(id);
+        }else {
+            throw new EntityNotFoundException("Id nao encontrado, Tente um ID valido");
         }
     }
 }
