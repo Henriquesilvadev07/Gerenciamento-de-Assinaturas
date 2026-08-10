@@ -29,4 +29,8 @@ public class AssinaturasModel {
     @Column(nullable = false)
     private String plano;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private UsersModel usuario;
+
 }
