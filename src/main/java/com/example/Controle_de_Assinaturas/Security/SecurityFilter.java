@@ -26,12 +26,15 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (tokenJWT != null) {
             var subject = tokenService.getSubject(tokenJWT);
             var user = usersRepository.findByLogin(subject);
+            //pega a autorizacao do usuario
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            //diz ao SpringSecurity que o usuario tem a permissao de utilizar aquilo que foi dado permissao
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }
 
+    //funcao para fazer a limpeza do header recebido, remover qualquer palavra alem do token e recuperar o token
     public String recuperarToken(HttpServletRequest request) {
         var authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader!= null && authorizationHeader.startsWith("Bearer ")){
