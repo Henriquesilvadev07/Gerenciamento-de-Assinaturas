@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -27,6 +24,7 @@ public class UsersController {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
 
+    @PostMapping("/login")
     public ResponseEntity efetuarLogin(@RequestBody @Valid UsersDto dto){
         var authToken = new UsernamePasswordAuthenticationToken(dto.login(), dto.senha());
         var authentication = authenticationManager.authenticate(authToken);
@@ -34,17 +32,20 @@ public class UsersController {
         return ResponseEntity.ok(new TokenJwtDto(JwtToken));
     }
 
+    @PostMapping("/register")
     public ResponseEntity<UsersModel> cadastro (@RequestBody @Valid UsersDto dto, UriComponentsBuilder uriBuilder){
         var users = usersService.cadastrar(dto);
         var uri = uriBuilder.path("/auth/registro/{id}").buildAndExpand(users.getId()).toUri();
         return ResponseEntity.created(uri).body(users);
     }
 
+    @PutMapping("/{id}")
     public ResponseEntity<UsersModel> atualizarPorId(@PathVariable Long id, @RequestBody @Valid UsersDto dto){
         var user = usersService.atualizarPorId(id, dto);
         return ResponseEntity.status(200).body(user);
     }
 
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarPorId(@PathVariable Long id){
        usersService.deletarPorId(id);
        return ResponseEntity.noContent().build();
