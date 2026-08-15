@@ -1,6 +1,7 @@
 package com.example.Controle_de_Assinaturas.controller;
 
 import com.example.Controle_de_Assinaturas.dto.AssinaturasDto;
+import com.example.Controle_de_Assinaturas.dto.AssinaturasResponseDto;
 import com.example.Controle_de_Assinaturas.model.AssinaturasModel;
 import com.example.Controle_de_Assinaturas.service.AssinaturasService;
 import jakarta.validation.Valid;
@@ -12,7 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 @RestController
-@RequestMapping("/assinatuas")
+@RequestMapping("/assinaturas")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class AssinaturasController {
@@ -28,19 +29,19 @@ public class AssinaturasController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AssinaturasModel>> listar() {
+    public ResponseEntity<List<AssinaturasResponseDto>> listar() {
         var assinaturas = assinaturasService.listarAssinaturas();
         return ResponseEntity.status(200).body(assinaturas);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AssinaturasModel> acharPorId(@RequestParam Long id) {
+    public ResponseEntity<AssinaturasResponseDto> acharPorId(@PathVariable Long id) {
         var assinaturas = assinaturasService.acharPorId(id);
         return ResponseEntity.status(200).body(assinaturas);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AssinaturasModel> atualizar(@PathVariable Long id, @RequestBody @Valid AssinaturasDto dto) {
+    public ResponseEntity<AssinaturasResponseDto> atualizar(@PathVariable Long id, @RequestBody @Valid AssinaturasDto dto) {
         var assinaturas = assinaturasService.atualizar(id, dto);
         return ResponseEntity.status(200).body(assinaturas);
     }
