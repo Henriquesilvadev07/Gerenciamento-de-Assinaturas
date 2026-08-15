@@ -47,4 +47,12 @@ public class UsersService implements UserDetailsService {
         return usersRepository.save(user);
     }
 
+    public void deletarPorId(Long id) {
+        if (usersRepository.existsById(id)) {
+            usersRepository.deleteById(id);
+        } else {
+            throw new EntityNotFoundException("Usuário não encontrado");
+        }
+    }
+
 }
