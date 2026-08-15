@@ -23,8 +23,8 @@ public class UsersService implements UserDetailsService {
     private SecurityConfig securityConfig;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetails user = usersRepository.findByLogin(username);
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        UserDetails user = usersRepository.findByLogin(login);
         if (user == null) {
             throw new UsernameNotFoundException("Usuário não encontrado!");
         }
