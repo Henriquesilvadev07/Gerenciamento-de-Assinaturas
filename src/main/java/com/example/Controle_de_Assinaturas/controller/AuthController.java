@@ -18,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-public class UsersController {
+public class AuthController {
 
     public final UsersService usersService;
     private final AuthenticationManager authenticationManager;
@@ -37,18 +37,6 @@ public class UsersController {
         var users = usersService.cadastrar(dto);
         var uri = uriBuilder.path("/auth/registro/{id}").buildAndExpand(users.getId()).toUri();
         return ResponseEntity.created(uri).body(users);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<UsersModel> atualizarPorId(@PathVariable Long id, @RequestBody @Valid UsersDto dto){
-        var user = usersService.atualizarPorId(id, dto);
-        return ResponseEntity.status(200).body(user);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarPorId(@PathVariable Long id){
-       usersService.deletarPorId(id);
-       return ResponseEntity.noContent().build();
     }
 
 }
