@@ -1,7 +1,10 @@
 package com.example.Controle_de_Assinaturas.service;
 
 import com.example.Controle_de_Assinaturas.Security.SecurityConfig;
+import com.example.Controle_de_Assinaturas.dto.UsersDto;
+import com.example.Controle_de_Assinaturas.model.UsersModel;
 import com.example.Controle_de_Assinaturas.repository.UsersRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,4 +29,13 @@ public class UsersService implements UserDetailsService {
         }
         return user;
     }
+
+    public UsersModel cadastrar(@Valid UsersDto dto) {
+        var user = new UsersModel();
+        user.setLogin(dto.login());
+        String senhaCriptografada = securityConfig.passwordEncoder().encode(dto.senha());
+        user.setSenha(senhaCriptografada);
+        return usersRepository.save(user);
+    }
+
 }
