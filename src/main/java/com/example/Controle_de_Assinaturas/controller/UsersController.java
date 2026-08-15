@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,5 +40,14 @@ public class UsersController {
         return ResponseEntity.created(uri).body(users);
     }
 
+    public ResponseEntity<UsersModel> atualizarPorId(@PathVariable Long id, @RequestBody @Valid UsersDto dto){
+        var user = usersService.atualizarPorId(id, dto);
+        return ResponseEntity.status(200).body(user);
+    }
+
+    public ResponseEntity<Void> deletarPorId(@PathVariable Long id){
+       usersService.deletarPorId(id);
+       return ResponseEntity.noContent().build();
+    }
 
 }
