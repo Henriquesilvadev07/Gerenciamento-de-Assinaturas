@@ -9,7 +9,7 @@
         :root {
             --bg: #0a0a0a; --surface: #141414; --primary: #e50914;
             --text-main: #ffffff; --text-dim: #a3a3a3; --border: #333333;
-            --success: #00ff88; --warning: #f1c40f;
+            --success: #00ff88; --warning: #f1c40f; --info: #3498db;
         }
         [data-theme="light"] {
             --bg: #f5f5f7; --surface: #ffffff; --text-main: #1d1d1f;
@@ -53,7 +53,7 @@
 
         .summary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .summary-box { background: var(--surface); padding: 14px; border-radius: 12px; border-left: 4px solid var(--border); }
-        .summary-box.debt { border-left-color: var(--primary); }
+        .summary-box.debt { border-left-color: var(--warning); }
         .summary-box label { font-size: 8px; text-transform: uppercase; color: var(--text-dim); font-weight: 700; }
         .summary-box h2 { font-size: 18px; margin: 5px 0 0 0; font-weight: 800; word-break: break-all; }
 
@@ -66,22 +66,20 @@
 
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; }
 
-        /* Tabela Otimizada para Celular (Compacta sem precisar arrastar) */
+        /* Tabela Otimizada para Celular */
         table { width: 100%; border-collapse: collapse; min-width: unset; table-layout: fixed; }
         th { text-align: left; padding: 10px 6px; font-size: 9px; color: var(--text-dim); border-bottom: 1px solid var(--border); text-transform: uppercase; background: var(--surface); }
         td { padding: 10px 6px; border-bottom: 1px solid var(--border); font-size: 11px; vertical-align: middle; word-break: break-word; }
 
-        /* Ajustes de largura das colunas para encaixar perfeitamente no mobile */
-        th:nth-child(1), td:nth-child(1) { width: 28%; } /* Serviço */
-        th:nth-child(2), td:nth-child(2) { width: 18%; } /* Vencimento */
-        th:nth-child(3), td:nth-child(3) { width: 20%; } /* Valor */
-        th:nth-child(4), td:nth-child(4) { width: 18%; } /* Status */
-        th:nth-child(5), td:nth-child(5) { width: 16%; text-align: right; } /* Ações */
+        th:nth-child(1), td:nth-child(1) { width: 28%; }
+        th:nth-child(2), td:nth-child(2) { width: 18%; }
+        th:nth-child(3), td:nth-child(3) { width: 20%; }
+        th:nth-child(4), td:nth-child(4) { width: 18%; }
+        th:nth-child(5), td:nth-child(5) { width: 16%; text-align: right; }
 
         .status-dot { height: 5px; width: 5px; border-radius: 50%; display: inline-block; margin-right: 3px; }
-        .dot-ATIVO { background: var(--success); }
-        .dot-SUSPENSO { background: var(--warning); }
-        .dot-CANCELADO { background: var(--primary); }
+        .dot-EM_DIA { background: var(--success); }
+        .dot-ATRASADO { background: var(--primary); }
 
         .action-cell { text-align: right; white-space: nowrap; }
         .btn-action { background: none; border: none; padding: 2px; margin-left: 2px; cursor: pointer; color: var(--text-dim); transition: 0.2s; display: inline-flex; align-items: center; vertical-align: middle; }
@@ -95,20 +93,14 @@
         .view-section { display: none; }
         .view-section.active { display: block; }
 
-        /* Estilos específicos para Desktop (A partir de 768px) */
         @media (min-width: 768px) {
             .container { padding: 40px 20px; }
             header { flex-wrap: nowrap; margin-bottom: 40px; }
-
-            /* Centraliza as opções do menu no desktop */
             .header-nav { justify-content: center; width: auto; overflow-x: visible; }
-
             .summary-row { gap: 15px; margin-bottom: 20px; }
             .summary-box { padding: 16px; }
             .summary-box h2 { font-size: 26px; }
             .summary-box label { font-size: 10px; }
-
-            /* Restaura o layout expandido e confortável da tabela no desktop */
             table { min-width: 450px; table-layout: auto; }
             th { padding: 12px 10px; font-size: 10px; }
             td { padding: 12px 10px; font-size: 12px; }
@@ -117,7 +109,6 @@
             th:nth-child(3), td:nth-child(3),
             th:nth-child(4), td:nth-child(4),
             th:nth-child(5), td:nth-child(5) { width: auto; }
-
             .status-dot { height: 6px; width: 6px; margin-right: 5px; }
             .btn-action { padding: 4px; margin-left: 6px; }
             .btn-action svg { width: 16px; height: 16px; }
@@ -178,8 +169,8 @@
     <!-- SEÇÃO 1: VISÃO GERAL -->
     <div id="view-dashboard" class="view-section active">
         <div class="summary-row">
-            <div class="summary-box"><label>Total Mensal</label><h2 id="totalValor">R$ 0,00</h2></div>
-            <div class="summary-box debt"><label>Suspenso / Cancelado</label><h2 id="totalAtraso" style="color: var(--primary);">R$ 0,00</h2></div>
+            <div class="summary-box"><label>Total Em Dia</label><h2 id="totalValor" style="color: var(--success);">R$ 0,00</h2></div>
+            <div class="summary-box debt"><label>Total Atrasado</label><h2 id="totalAtraso" style="color: var(--primary);">R$ 0,00</h2></div>
         </div>
         <div class="card" style="padding: 0; overflow: hidden;">
             <div class="table-responsive">
@@ -201,7 +192,8 @@
             <div class="form-group"><label>Vencimento</label><select id="dataVencimento" class="form-control"></select></div>
             <div class="form-group"><label>Status</label>
                 <select id="status" class="form-control">
-                    <option value="ATIVO">Ativo</option><option value="SUSPENSO">Suspenso</option><option value="CANCELADO">Cancelado</option>
+                    <option value="EM_DIA">Em Dia</option>
+                    <option value="ATRASADO">Atrasado</option>
                 </select>
             </div>
             <div class="form-group"><label>Plano</label><input type="text" id="plano" class="form-control" placeholder="Ex: Premium 4K"></div>
@@ -239,7 +231,7 @@
 </div>
 
 <script>
-    const API_URL = 'http://localhost:8080';
+    const API_URL = 'http://192.168.0.3:8080';
     let editMode = false;
 
     const iconEdit = `<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
@@ -334,14 +326,31 @@
             const resp = await fetch(`${API_URL}/assinaturas`, { headers: { 'Authorization': `Bearer ${token}` } });
             if(resp.status === 401 || resp.status === 403) { fazerLogout(); return; }
             const dados = await resp.json();
-            let corpo = document.getElementById('tabelaCorpo'), tMensal = 0, tAtraso = 0, html = "";
+            let corpo = document.getElementById('tabelaCorpo'), tEmDia = 0, tAtrasado = 0, html = "";
+
             dados.forEach(a => {
-                if(a.status === 'ATIVO') tMensal += a.valor;
-                if(a.status === 'SUSPENSO' || a.status === 'CANCELADO') tAtraso += a.valor;
-                html += `<tr><td><div>${a.servico}</div></td><td>Dia ${a.dataVencimento}</td><td>R$ ${a.valor.toFixed(2)}</td><td><span class="status-dot dot-${a.status}"></span>${a.status}</td><td class="action-cell"><button class="btn-action" onclick='prepEdit(${JSON.stringify(a)})'>${iconEdit}</button><button class="btn-action" onclick="deletar(${a.id})">${iconDelete}</button></td></tr>`;
+                if(a.status === 'EM_DIA') {
+                    tEmDia += a.valor;
+                } else if(a.status === 'ATRASADO') {
+                    tAtraso += a.valor;
+                }
+
+                let statusLabel = a.status === 'EM_DIA' ? 'Em Dia' : 'Atrasado';
+
+                html += `<tr>
+                    <td><div>${a.servico}</div></td>
+                    <td>Dia ${a.dataVencimento}</td>
+                    <td>R$ ${a.valor.toFixed(2)}</td>
+                    <td><span class="status-dot dot-${a.status}"></span>${statusLabel}</td>
+                    <td class="action-cell">
+                        <button class="btn-action" onclick='prepEdit(${JSON.stringify(a)})'>${iconEdit}</button>
+                        <button class="btn-action" onclick="deletar(${a.id})">${iconDelete}</button>
+                    </td>
+                </tr>`;
             });
+
             corpo.innerHTML = html;
-            document.getElementById('totalValor').innerText = `R$ ${tMensal.toFixed(2)}`;
+            document.getElementById('totalValor').innerText = `R$ ${tEmDia.toFixed(2)}`;
             document.getElementById('totalAtraso').innerText = `R$ ${tAtraso.toFixed(2)}`;
         } catch(e) {}
     }
