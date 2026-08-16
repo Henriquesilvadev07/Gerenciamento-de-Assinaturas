@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @jakarta.persistence.Entity
 @Data
 @AllArgsConstructor
@@ -22,6 +24,9 @@ public class AssinaturasModel {
     private Double valor;
 
     private int dataVencimento;
+
+    @Column(name = "proximo_vencimento", nullable = true)
+    private LocalDate proximoVencimento;
 
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
