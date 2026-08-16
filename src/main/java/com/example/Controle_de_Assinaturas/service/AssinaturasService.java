@@ -23,24 +23,16 @@ public class AssinaturasService {
     private final UsersRepository usersRepository;
 
     private AssinaturasModel verificarEAtualizarStatus(AssinaturasModel assinatura) {
-        if (assinatura.getStatus() == StatusEnum.EM_DIA &&
-                LocalDate.now().isAfter(assinatura.getProximoVencimento())) {
+        if (assinatura.getStatus() == StatusEnum.EM_DIA && assinatura.getProximoVencimento() != null) {
+            LocalDate hoje = LocalDate.now();
 
-            assinatura.setStatus(StatusEnum.ATRASADO);
-            return assinaturasRepository.save(assinatura);
+            // Só marca como ATRASADO se a data completa do próximo vencimento já passou
+            if (hoje.isAfter(assinatura.getProximoVencimento())) {
+                assinatura.setStatus(StatusEnum.ATRASADO);
+                return assinaturasRepository.save(assinatura);
+            }
         }
         return assinatura;
-    }
-
-    private LocalDate calcularProximoVencimento(int diaVencimento) {
-        LocalDate hoje = LocalDate.now();
-        int diaFinal = Math.min(diaVencimento, hoje.lengthOfMonth());
-        LocalDate proximo = hoje.withDayOfMonth(diaFinal);
-
-        if (hoje.isAfter(proximo)) {
-            proximo = proximo.plusMonths(1).withDayOfMonth(Math.min(diaVencimento, proximo.plusMonths(1).lengthOfMonth()));
-        }
-        return proximo;
     }
 
     public AssinaturasModel salvar(AssinaturasDto dto) {
@@ -56,15 +48,16 @@ public class AssinaturasService {
         assinatura.setPlano(dto.plano());
         assinatura.setUsuario(usuarioLogado);
 
-        // Respeita o status enviado pelo DTO; se vier nulo, assume EM_DIA
-        assinatura.setStatus(dto.status() != null ? dto.status() : StatusEnum.EM_DIA);
-        assinatura.setProximoVencimento(calcularProximoVencimento(dto.dataVencimento()));
+        // Se o front enviar status, usa ele. Se vier nulo, assume EM_DIA
+        StatusEnum statusInicial = dto.status() != null ? dto.status() : StatusEnum.EM_DIA;
+        assinatura.setStatus(statusInicial);
 
         return assinaturasRepository.save(assinatura);
     }
 
     public AssinaturasResponseDto acharPorId(Long id) {
-        var assinatura = assinaturasRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Id nao encontrado"));
+        var assinatura = assinaturasRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Id nao encontrado"));
         return new AssinaturasResponseDto(verificarEAtualizarStatus(assinatura));
     }
 
@@ -78,10 +71,10 @@ public class AssinaturasService {
     }
 
     public AssinaturasResponseDto atualizar(Long id, AssinaturasDto dto) {
-        var assinatura = assinaturasRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Id nao encontrado, Tente um ID valido")
-        );
-        if (dto.dataVencimento() < 1 || dto.dataVencimento() > 31 ) {
+        var assinatura = assinaturasRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Id nao encontrado, Tente um ID valido"));
+
+        if (dto.dataVencimento() < 1 || dto.dataVencimento() > 31) {
             throw new IllegalArgumentException("Dia de vencimento invalido");
         }
 
@@ -90,18 +83,16 @@ public class AssinaturasService {
         assinatura.setDataVencimento(dto.dataVencimento());
         assinatura.setPlano(dto.plano());
 
-        // Atualiza o status conforme informado pelo usuário no formulário
+        // Atualiza o status se for informado no DTO
         if (dto.status() != null) {
             assinatura.setStatus(dto.status());
         }
-
-        assinatura.setProximoVencimento(calcularProximoVencimento(dto.dataVencimento()));
 
         var assinaturaAtualizada = assinaturasRepository.save(assinatura);
         return new AssinaturasResponseDto(assinaturaAtualizada);
     }
 
-    public void deletar(Long id){
+    public void deletar(Long id) {
         if (assinaturasRepository.existsById(id)) {
             assinaturasRepository.deleteById(id);
         } else {

@@ -326,9 +326,8 @@
 </div>
 
 <script>
-    const API_URL = 'http://192.168.0.3:8080';
+    const API_URL = 'http://localhost:8080';
     let editMode = false;
-    let base64TempImage = null;
 
     const iconEdit = `<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
     const iconDelete = `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`;
@@ -379,43 +378,16 @@
         const headerName = document.getElementById('headerName');
         if(headerName) headerName.innerText = nome;
         document.getElementById('headerAvatar').src = avatar;
-        document.getElementById('profileAvatarLarge').src = avatar;
 
         document.getElementById('inputNomePerfil').value = localStorage.getItem('userName') || '';
         document.getElementById('inputAvatarPerfil').value = localStorage.getItem('userAvatar') || '';
     }
 
-    function converterEPreviewFoto(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                base64TempImage = e.target.result;
-                document.getElementById('profileAvatarLarge').src = base64TempImage;
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function previewUrlFoto(url) {
-        if(url.trim() !== '') {
-            base64TempImage = null; // limpa seleção de arquivo se digitar URL
-            document.getElementById('profileAvatarLarge').src = url;
-        }
-    }
-
     function salvarPerfil() {
         const nome = document.getElementById('inputNomePerfil').value;
-        const avatarUrl = document.getElementById('inputAvatarPerfil').value;
-
+        const avatar = document.getElementById('inputAvatarPerfil').value;
         if(nome) localStorage.setItem('userName', nome);
-
-        if(base64TempImage) {
-            localStorage.setItem('userAvatar', base64TempImage);
-        } else if(avatarUrl) {
-            localStorage.setItem('userAvatar', avatarUrl);
-        }
-
+        if(avatar) localStorage.setItem('userAvatar', avatar);
         carregarPerfilNaTela();
         switchView('dashboard');
     }
@@ -449,33 +421,33 @@
             const resp = await fetch(`${API_URL}/assinaturas`, { headers: { 'Authorization': `Bearer ${token}` } });
             if(resp.status === 401 || resp.status === 403) { fazerLogout(); return; }
             const dados = await resp.json();
-            let corpo = document.getElementById('tabelaCorpo'), tEmDia = 0, tAtrasado = 0, html = "";
+            let corpo = document.getElementById('tabelaCorpo'), tEmDia = 0, tAtraso = 0, html = "";
 
             dados.forEach(a => {
-                if(a.status === 'EM_DIA') {
-                    tEmDia += a.valor;
-                } else if(a.status === 'ATRASADO') {
-                    tAtraso += a.valor;
-                }
+                const statusStr = typeof a.status === 'object' ? a.status.id : a.status;
 
-                let statusLabel = a.status === 'EM_DIA' ? 'Em Dia' : 'Atrasado';
+                if(statusStr === 'EM_DIA' || statusStr === 'ATIVO') tEmDia += a.valor;
+                if(statusStr === 'ATRASADO' || statusStr === 'SUSPENSO' || statusStr === 'CANCELADO') tAtraso += a.valor;
+
+                let statusLabel = statusStr === 'EM_DIA' ? 'Em Dia' : (statusStr === 'ATRASADO' ? 'Atrasado' : statusStr);
 
                 html += `<tr>
                     <td><div>${a.servico}</div></td>
                     <td>Dia ${a.dataVencimento}</td>
                     <td>R$ ${a.valor.toFixed(2)}</td>
-                    <td class="status-cell"><span class="status-dot dot-${a.status}"></span>${statusLabel}</td>
+                    <td class="status-cell"><span class="status-dot dot-${statusStr}"></span>${statusLabel}</td>
                     <td class="action-cell">
                         <button class="btn-action" onclick='prepEdit(${JSON.stringify(a)})'>${iconEdit}</button>
                         <button class="btn-action" onclick="deletar(${a.id})">${iconDelete}</button>
                     </td>
                 </tr>`;
             });
-
             corpo.innerHTML = html;
             document.getElementById('totalValor').innerText = `R$ ${tEmDia.toFixed(2)}`;
             document.getElementById('totalAtraso').innerText = `R$ ${tAtraso.toFixed(2)}`;
-        } catch(e) {}
+        } catch(e) {
+            console.error("Erro ao listar assinaturas:", e);
+        }
     }
 
     async function fazerLogin() {
@@ -506,14 +478,15 @@
     }
 
     async function handleSalvar() {
-        const statusValue = document.getElementById('status').value;
+        const usuarioId = parseInt(localStorage.getItem('usuarioId')) || 1;
+
         const dto = {
             servico: document.getElementById('servico').value,
             valor: parseFloat(document.getElementById('valor').value),
             dataVencimento: parseInt(document.getElementById('dataVencimento').value),
-            status: statusValue,
+            status: document.getElementById('status').value,
             plano: document.getElementById('plano').value,
-            usuario: parseInt(localStorage.getItem('usuarioId')) || 1
+            usuario: usuarioId
         };
 
         const id = document.getElementById('assinaturaId').value;
@@ -529,23 +502,35 @@
                 body: JSON.stringify(dto)
             });
 
-            if (!resp.ok) throw new Error("Erro ao salvar");
+            if (!resp.ok) {
+                const errorText = await resp.text();
+                console.error("Erro retornado pelo backend:", errorText);
+                throw new Error("Erro ao salvar no servidor");
+            }
 
             resetForm();
             switchView('dashboard');
             listar();
         } catch (e) {
-            alert("Erro ao salvar assinatura. Verifique os campos.");
+            alert("Erro ao salvar assinatura. Verifique os campos ou abra o console do navegador.");
         }
     }
 
     function prepEdit(o) {
         editMode = true;
+        const statusStr = typeof o.status === 'object' ? o.status.id : o.status;
+
+        if (o.usuario && typeof o.usuario === 'number') {
+            localStorage.setItem('usuarioId', o.usuario);
+        } else if (o.usuario && o.usuario.id) {
+            localStorage.setItem('usuarioId', o.usuario.id);
+        }
+
         document.getElementById('assinaturaId').value = o.id;
         document.getElementById('servico').value = o.servico;
         document.getElementById('valor').value = o.valor;
         document.getElementById('dataVencimento').value = o.dataVencimento;
-        document.getElementById('status').value = o.status;
+        document.getElementById('status').value = statusStr;
         document.getElementById('plano').value = o.plano || '';
         document.getElementById('btnSubmit').innerText = "Atualizar Assinatura";
         document.getElementById('btnSubmit').classList.add('edit-mode');

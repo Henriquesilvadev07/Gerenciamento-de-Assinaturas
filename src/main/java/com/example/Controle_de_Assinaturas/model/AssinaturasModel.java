@@ -25,7 +25,7 @@ public class AssinaturasModel {
 
     private int dataVencimento;
 
-    @Column(name = "proximo_vencimento", nullable = false)
+    @Column(name = "proximo_vencimento", nullable = true)
     private LocalDate proximoVencimento;
 
     @Enumerated(EnumType.STRING)
