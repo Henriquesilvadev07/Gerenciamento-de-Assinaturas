@@ -72,10 +72,10 @@ public class AssinaturasService {
 
     public AssinaturasResponseDto atualizar(Long id, AssinaturasDto dto) {
         var assinatura = assinaturasRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Id nao encontrado, Tente um ID valido"));
+                .orElseThrow(() -> new EntityNotFoundException("Id não encontrado. Tente um ID válido"));
 
         if (dto.dataVencimento() < 1 || dto.dataVencimento() > 31) {
-            throw new IllegalArgumentException("Dia de vencimento invalido");
+            throw new IllegalArgumentException("Dia de vencimento inválido");
         }
 
         assinatura.setServico(dto.servico());
@@ -85,6 +85,13 @@ public class AssinaturasService {
 
         // Atualiza o status se for informado no DTO
         if (dto.status() != null) {
+            // Se a assinatura estava atrasada e passou para EM_DIA, avança a data de próximo vencimento
+            if (dto.status() == StatusEnum.EM_DIA && assinatura.getStatus() == StatusEnum.ATRASADO) {
+                LocalDate base = assinatura.getProximoVencimento() != null ? assinatura.getProximoVencimento() : LocalDate.now();
+                assinatura.setProximoVencimento(base.plusMonths(1));
+            }
+
+            // Garante que o status seja atualizado independente do valor (EM_DIA ou ATRASADO)
             assinatura.setStatus(dto.status());
         }
 

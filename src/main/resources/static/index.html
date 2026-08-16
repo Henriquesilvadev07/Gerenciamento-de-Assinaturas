@@ -88,7 +88,6 @@
         .user-mini-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 4px; }
         .avatar-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); background: var(--border); flex-shrink: 0; }
 
-        /* Estilo da foto maior no perfil */
         .profile-avatar-container {
             display: flex;
             flex-direction: column;
@@ -105,7 +104,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* Ajuste do Texto Olá no Topo */
         .greeting-text { font-size: 13px; font-weight: 400; color: var(--text-dim); }
         .greeting-text strong { font-weight: 600; color: var(--text-main); }
 
@@ -145,12 +143,10 @@
 
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; }
 
-        /* Tabela Otimizada para Não Quebrar Textos em Telas de Celulares */
         table { width: 100%; border-collapse: collapse; min-width: 320px; table-layout: auto; }
         th { text-align: left; padding: 12px 8px; font-size: 11px; color: var(--text-dim); border-bottom: 1px solid var(--border); text-transform: uppercase; background: var(--surface); letter-spacing: 0.5px; white-space: nowrap; }
         td { padding: 14px 8px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; font-weight: 500; }
 
-        /* Prevenção de quebra do Status */
         .status-cell { white-space: nowrap; font-weight: 600; }
         .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; flex-shrink: 0; }
         .dot-EM_DIA { background: var(--success); }
@@ -171,8 +167,11 @@
             vertical-align: middle;
             min-width: 32px;
             min-height: 32px;
+            border-radius: 6px;
         }
-        .btn-action:hover { color: var(--text-main); }
+        .btn-action:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.05); }
+        .btn-action.btn-pay { color: var(--success); }
+        .btn-action.btn-pay:hover { background: rgba(0, 255, 136, 0.1); }
         .btn-action svg { width: 18px; height: 18px; fill: currentColor; }
 
         footer { margin-top: 35px; padding: 20px 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-dim); flex-wrap: wrap; gap: 12px; }
@@ -181,6 +180,94 @@
 
         .view-section { display: none; }
         .view-section.active { display: block; }
+
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            background: var(--surface);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 14px 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-main);
+            font-size: 13px;
+            animation: slideIn 0.3s ease-out forwards;
+            border-top: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toast.toast-error { border-left-color: var(--primary); }
+        .toast.toast-success { border-left-color: var(--success); }
+        .toast.toast-warning { border-left-color: var(--warning); }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
 
         @media (min-width: 768px) {
             .container { padding: 40px 20px; }
@@ -199,7 +286,19 @@
 </head>
 <body data-theme="dark">
 
-<!-- TELA DE AUTENTICAÇÃO -->
+<div id="toast-container"></div>
+
+<div id="modalConfirm" class="modal-overlay">
+    <div class="modal-box">
+        <h3 id="modalTitle" style="margin-top: 0; font-size: 18px;">Confirmar Ação</h3>
+        <p id="modalMsg" style="color: var(--text-dim); font-size: 14px;">Tem certeza que deseja prosseguir?</p>
+        <div class="modal-actions">
+            <button type="button" class="btn-rick" style="background: none; border: 1px solid var(--border);" onclick="fecharModal()">Cancelar</button>
+            <button type="button" id="modalBtnConfirm" class="btn-rick">Confirmar</button>
+        </div>
+    </div>
+</div>
+
 <div id="authScreen" class="container auth-container">
     <header style="justify-content: center; margin-bottom: 20px;">
         <div class="logo">RICK<span>SUBS.</span></div>
@@ -228,7 +327,6 @@
     </div>
 </div>
 
-<!-- DASHBOARD PRINCIPAL -->
 <div id="dashboardScreen" class="container" style="display: none;">
     <header>
         <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -248,7 +346,6 @@
         </div>
     </header>
 
-    <!-- SEÇÃO 1: VISÃO GERAL -->
     <div id="view-dashboard" class="view-section active">
         <div class="summary-row">
             <div class="summary-box"><label>Total Em Dia</label><h2 id="totalValor" style="color: var(--success);">R$ 0,00</h2></div>
@@ -264,7 +361,6 @@
         </div>
     </div>
 
-    <!-- SEÇÃO 2: NOVO / EDITAR SERVIÇO -->
     <div id="view-cadastrar" class="view-section">
         <div class="card" style="max-width: 600px; margin: 0 auto;">
             <h3 id="formTitle" style="margin: 0 0 20px 0; font-size: 18px;">Registrar Nova Assinatura</h3>
@@ -284,12 +380,10 @@
         </div>
     </div>
 
-    <!-- SEÇÃO 3: PERFIL E CONFIGURAÇÕES -->
     <div id="view-perfil" class="view-section">
         <div class="card" style="max-width: 600px; margin: 0 auto;">
             <h3 style="margin: 0 0 20px 0; font-size: 18px;">Personalização de Perfil</h3>
 
-            <!-- Foto de Perfil Maior no Perfil -->
             <div class="profile-avatar-container">
                 <img id="profileAvatarLarge" src="https://via.placeholder.com/90" class="profile-avatar-large" alt="Foto do Perfil">
             </div>
@@ -326,14 +420,91 @@
 </div>
 
 <script>
-    const API_URL = '';
+    const API_URL = 'http://localhost:8080';
     let editMode = false;
+    let confirmCallback = null;
 
     const iconEdit = `<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
     const iconDelete = `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`;
+    const iconPay = `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
 
     const select = document.getElementById('dataVencimento');
     for(let i=1; i<=31; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerHTML = `Dia ${i}`; select.appendChild(opt); }
+
+    function toggleTheme() {
+        const body = document.body;
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    if(localStorage.getItem('theme')) {
+        document.body.setAttribute('data-theme', localStorage.getItem('theme'));
+    }
+
+    function showToast(mensagem, tipo = 'error') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${tipo}`;
+
+        toast.innerHTML = `
+            <span>${mensagem}</span>
+            <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+        `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-out forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    async function tratarRespostaErro(response, contexto = 'geral') {
+        if (response.status === 403 || response.status === 401) {
+            if (contexto === 'login') return "E-mail ou senha incorretos.";
+            return "Sessão inválida ou acesso negado. Faça login novamente.";
+        }
+        if (response.status === 409) {
+            if (contexto === 'cadastro') return "Já existe uma conta cadastrada com este e-mail.";
+            return "Conflito nos dados informados.";
+        }
+        if (response.status === 400) {
+            return "Informações incompletas ou inválidas. Verifique os campos.";
+        }
+
+        try {
+            const text = await response.text();
+            if (!text) return "Ocorreu um erro no servidor.";
+
+            try {
+                const data = JSON.parse(text);
+                return data.message || data.error || data.details || "Ocorreu um erro ao processar a solicitação.";
+            } catch {
+                return "Ocorreu um erro no servidor.";
+            }
+        } catch {
+            return "Não foi possível conectar ao servidor.";
+        }
+    }
+
+    function abrirModalConfirmacao(titulo, mensagem, onConfirm) {
+        document.getElementById('modalTitle').innerText = titulo;
+        document.getElementById('modalMsg').innerText = mensagem;
+        confirmCallback = onConfirm;
+        document.getElementById('modalConfirm').classList.add('active');
+    }
+
+    function fecharModal() {
+        document.getElementById('modalConfirm').classList.remove('active');
+        confirmCallback = null;
+    }
+
+    document.getElementById('modalBtnConfirm').onclick = function() {
+        if (confirmCallback) confirmCallback();
+        fecharModal();
+    };
 
     function switchAuthTab(tab) {
         if(tab === 'login') {
@@ -381,45 +552,129 @@
 
         document.getElementById('inputNomePerfil').value = localStorage.getItem('userName') || '';
         document.getElementById('inputAvatarPerfil').value = localStorage.getItem('userAvatar') || '';
+        document.getElementById('profileAvatarLarge').src = avatar;
+    }
+
+    function converterEPreviewFoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Url = e.target.result;
+                document.getElementById('inputAvatarPerfil').value = base64Url;
+                document.getElementById('profileAvatarLarge').src = base64Url;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function previewUrlFoto(url) {
+        if (url) {
+            document.getElementById('profileAvatarLarge').src = url;
+        }
     }
 
     function salvarPerfil() {
         const nome = document.getElementById('inputNomePerfil').value;
         const avatar = document.getElementById('inputAvatarPerfil').value;
+        if(!nome && !avatar) {
+            showToast("Preencha ao menos o nome ou informe uma foto para salvar.", "warning");
+            return;
+        }
         if(nome) localStorage.setItem('userName', nome);
         if(avatar) localStorage.setItem('userAvatar', avatar);
         carregarPerfilNaTela();
+        showToast("Perfil atualizado com sucesso!", "success");
         switchView('dashboard');
     }
 
+    async function fazerLogin() {
+        const login = document.getElementById('loginEmail').value.trim();
+        const senha = document.getElementById('loginSenha').value;
+
+        if(!login || !senha) {
+            showToast("Preencha o e-mail e a senha para entrar.", "warning");
+            return;
+        }
+
+        try {
+            const resp = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ login, senha })
+            });
+
+            if(!resp.ok) {
+                const msg = await tratarRespostaErro(resp, 'login');
+                throw new Error(msg);
+            }
+
+            const data = await resp.json();
+            localStorage.setItem('token', data.token);
+            if(data.usuarioId) localStorage.setItem('usuarioId', data.usuarioId);
+            localStorage.setItem('userEmail', login);
+
+            showToast("Login realizado com sucesso!", "success");
+            mostrarDashboard();
+            carregarPerfilNaTela();
+            listar();
+        } catch(e) {
+            showToast(e.message, "error");
+        }
+    }
+
     async function fazerCadastro() {
-        const login = document.getElementById('regEmail').value;
+        const login = document.getElementById('regEmail').value.trim();
         const senha = document.getElementById('regSenha').value;
+
+        if(!login || !senha) {
+            showToast("Preencha e-mail e senha para realizar o cadastro.", "warning");
+            return;
+        }
+
         try {
             const resp = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ login, senha })
             });
-            if(!resp.ok) throw new Error("Erro ao cadastrar");
-            alert("Cadastro realizado com sucesso! Faça seu login.");
+
+            if(!resp.ok) {
+                const msg = await tratarRespostaErro(resp, 'cadastro');
+                throw new Error(msg);
+            }
+
+            showToast("Cadastro realizado com sucesso! Faça seu login.", "success");
             switchAuthTab('login');
             document.getElementById('loginEmail').value = login;
             document.getElementById('regEmail').value = '';
             document.getElementById('regSenha').value = '';
         } catch(e) {
-            document.getElementById('regError').innerText = "Erro ao cadastrar. Tente outro e-mail.";
-            document.getElementById('regError').style.display = 'block';
+            showToast(e.message, "error");
         }
     }
 
-    function fazerLogout() { localStorage.clear(); mostrarAuth(); }
+    function fazerLogout(mensagem) {
+        localStorage.clear();
+        mostrarAuth();
+        if(mensagem) showToast(mensagem, "warning");
+    }
 
     async function listar() {
         const token = localStorage.getItem('token');
         try {
             const resp = await fetch(`${API_URL}/assinaturas`, { headers: { 'Authorization': `Bearer ${token}` } });
-            if(resp.status === 401 || resp.status === 403) { fazerLogout(); return; }
+
+            if(resp.status === 401 || resp.status === 403) {
+                fazerLogout("Sua sessão expirou. Faça login novamente.");
+                return;
+            }
+
+            if(!resp.ok) {
+                const msg = await tratarRespostaErro(resp, 'geral');
+                throw new Error(msg);
+            }
+
             const dados = await resp.json();
             let corpo = document.getElementById('tabelaCorpo'), tEmDia = 0, tAtraso = 0, html = "";
 
@@ -431,14 +686,19 @@
 
                 let statusLabel = statusStr === 'EM_DIA' ? 'Em Dia' : (statusStr === 'ATRASADO' ? 'Atrasado' : statusStr);
 
+                const btnPayHtml = (statusStr === 'ATRASADO' || statusStr === 'SUSPENSO')
+                    ? `<button class="btn-action btn-pay" onclick='marcarComoPago(${JSON.stringify(a)})' title="Marcar como Pago">${iconPay}</button>`
+                    : '';
+
                 html += `<tr>
                     <td><div>${a.servico}</div></td>
                     <td>Dia ${a.dataVencimento}</td>
                     <td>R$ ${a.valor.toFixed(2)}</td>
                     <td class="status-cell"><span class="status-dot dot-${statusStr}"></span>${statusLabel}</td>
                     <td class="action-cell">
-                        <button class="btn-action" onclick='prepEdit(${JSON.stringify(a)})'>${iconEdit}</button>
-                        <button class="btn-action" onclick="deletar(${a.id})">${iconDelete}</button>
+                        ${btnPayHtml}
+                        <button class="btn-action" onclick='prepEdit(${JSON.stringify(a)})' title="Editar">${iconEdit}</button>
+                        <button class="btn-action" onclick="deletar(${a.id})" title="Excluir">${iconDelete}</button>
                     </td>
                 </tr>`;
             });
@@ -446,55 +706,32 @@
             document.getElementById('totalValor').innerText = `R$ ${tEmDia.toFixed(2)}`;
             document.getElementById('totalAtraso').innerText = `R$ ${tAtraso.toFixed(2)}`;
         } catch(e) {
-            console.error("Erro ao listar assinaturas:", e);
-        }
-    }
-
-    async function fazerLogin() {
-        const login = document.getElementById('loginEmail').value;
-        const senha = document.getElementById('loginSenha').value;
-        try {
-            const resp = await fetch(`${API_URL}/auth/login`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ login, senha })
-            });
-            if(!resp.ok) throw new Error("Credenciais inválidas");
-            const data = await resp.json();
-
-            const token = typeof data === 'string' ? data : (data.token || data.accessToken);
-            localStorage.setItem('token', token);
-            localStorage.setItem('userEmail', login);
-            if (data.id) localStorage.setItem('usuarioId', data.id);
-            if (data.usuarioId) localStorage.setItem('usuarioId', data.usuarioId);
-
-            mostrarDashboard();
-            listar();
-            carregarPerfilNaTela();
-        } catch(e) {
-            document.getElementById('loginError').innerText = "Usuário inexistente ou senha inválida.";
-            document.getElementById('loginError').style.display = 'block';
+            showToast(e.message || "Não foi possível carregar a lista de assinaturas.", "error");
         }
     }
 
     async function handleSalvar() {
+        const id = document.getElementById('assinaturaId').value;
+        const servico = document.getElementById('servico').value.trim();
+        const valor = parseFloat(document.getElementById('valor').value);
+        const dataVencimento = parseInt(document.getElementById('dataVencimento').value);
+        const status = document.getElementById('status').value;
+        const plano = document.getElementById('plano').value.trim();
         const usuarioId = parseInt(localStorage.getItem('usuarioId')) || 1;
 
-        const dto = {
-            servico: document.getElementById('servico').value,
-            valor: parseFloat(document.getElementById('valor').value),
-            dataVencimento: parseInt(document.getElementById('dataVencimento').value),
-            status: document.getElementById('status').value,
-            plano: document.getElementById('plano').value,
-            usuario: usuarioId
-        };
+        if(!servico || isNaN(valor) || valor <= 0 || !dataVencimento) {
+            showToast("Preencha todos os campos obrigatórios (Serviço, Valor e Vencimento).", "warning");
+            return;
+        }
 
-        const id = document.getElementById('assinaturaId').value;
-        const isEdit = editMode && id;
+        const dto = { servico, valor, dataVencimento, status, plano, usuario: usuarioId };
+        const isEdit = !!id;
+        const url = isEdit ? `${API_URL}/assinaturas/${id}` : `${API_URL}/assinaturas`;
+        const method = isEdit ? 'PUT' : 'POST';
 
         try {
-            const resp = await fetch(isEdit ? `${API_URL}/assinaturas/${id}` : `${API_URL}/assinaturas`, {
-                method: isEdit ? 'PUT' : 'POST',
+            const resp = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -502,62 +739,118 @@
                 body: JSON.stringify(dto)
             });
 
-            if (!resp.ok) {
-                const errorText = await resp.text();
-                console.error("Erro retornado pelo backend:", errorText);
-                throw new Error("Erro ao salvar no servidor");
+            if(resp.status === 401 || resp.status === 403) {
+                fazerLogout("Sua sessão expirou.");
+                return;
             }
 
+            if(!resp.ok) {
+                const msg = await tratarRespostaErro(resp, 'salvar');
+                throw new Error(msg);
+            }
+
+            showToast(`Assinatura ${isEdit ? 'atualizada' : 'cadastrada'} com sucesso!`, "success");
             resetForm();
             switchView('dashboard');
             listar();
-        } catch (e) {
-            alert("Erro ao salvar assinatura. Verifique os campos ou abra o console do navegador.");
+        } catch(e) {
+            showToast(e.message, "error");
         }
     }
 
-    function prepEdit(o) {
-        editMode = true;
-        const statusStr = typeof o.status === 'object' ? o.status.id : o.status;
+    function prepEdit(a) {
+        document.getElementById('assinaturaId').value = a.id;
+        document.getElementById('servico').value = a.servico;
+        document.getElementById('valor').value = a.valor;
+        document.getElementById('dataVencimento').value = a.dataVencimento;
+        document.getElementById('status').value = typeof a.status === 'object' ? a.status.id : a.status;
+        document.getElementById('plano').value = a.plano || '';
 
-        if (o.usuario && typeof o.usuario === 'number') {
-            localStorage.setItem('usuarioId', o.usuario);
-        } else if (o.usuario && o.usuario.id) {
-            localStorage.setItem('usuarioId', o.usuario.id);
-        }
-
-        document.getElementById('assinaturaId').value = o.id;
-        document.getElementById('servico').value = o.servico;
-        document.getElementById('valor').value = o.valor;
-        document.getElementById('dataVencimento').value = o.dataVencimento;
-        document.getElementById('status').value = statusStr;
-        document.getElementById('plano').value = o.plano || '';
+        document.getElementById('formTitle').innerText = "Editar Assinatura";
         document.getElementById('btnSubmit').innerText = "Atualizar Assinatura";
         document.getElementById('btnSubmit').classList.add('edit-mode');
-        document.getElementById('btnCancelar').style.display = "block";
+        document.getElementById('btnCancelar').style.display = 'block';
+
         switchView('cadastrar');
     }
 
     function resetForm() {
-        editMode = false;
         document.getElementById('assinaturaId').value = '';
         document.getElementById('servico').value = '';
         document.getElementById('valor').value = '';
+        document.getElementById('dataVencimento').selectedIndex = 0;
+        document.getElementById('status').value = 'EM_DIA';
         document.getElementById('plano').value = '';
+
+        document.getElementById('formTitle').innerText = "Registrar Nova Assinatura";
         document.getElementById('btnSubmit').innerText = "Salvar Assinatura";
         document.getElementById('btnSubmit').classList.remove('edit-mode');
-        document.getElementById('btnCancelar').style.display = "none";
+        document.getElementById('btnCancelar').style.display = 'none';
     }
 
     async function deletar(id) {
-        if(confirm("Remover assinatura?")) {
-            await fetch(`${API_URL}/assinaturas/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
-            listar();
-        }
+        abrirModalConfirmacao("Excluir Assinatura", "Tem certeza que deseja excluir esta assinatura?", async () => {
+            try {
+                const resp = await fetch(`${API_URL}/assinaturas/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+
+                if(resp.status === 401 || resp.status === 403) {
+                    fazerLogout("Sua sessão expirou.");
+                    return;
+                }
+
+                if(!resp.ok) {
+                    const msg = await tratarRespostaErro(resp, 'geral');
+                    throw new Error(msg);
+                }
+
+                showToast("Assinatura removida com sucesso!", "success");
+                listar();
+            } catch(e) {
+                showToast(e.message, "error");
+            }
+        });
     }
 
-    function toggleTheme() {
-        document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    async function marcarComoPago(assinatura) {
+        const usuarioId = parseInt(localStorage.getItem('usuarioId')) || 1;
+
+        const dto = {
+            servico: assinatura.servico,
+            valor: assinatura.valor,
+            dataVencimento: assinatura.dataVencimento,
+            status: "EM_DIA",
+            plano: assinatura.plano || "",
+            usuario: usuarioId
+        };
+
+        try {
+            const resp = await fetch(`${API_URL}/assinaturas/${assinatura.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(dto)
+            });
+
+            if (resp.status === 401 || resp.status === 403) {
+                fazerLogout("Sua sessão expirou.");
+                return;
+            }
+
+            if (!resp.ok) {
+                const msg = await tratarRespostaErro(resp, 'geral');
+                throw new Error(msg);
+            }
+
+            showToast("Pagamento confirmado!", "success");
+            listar();
+        } catch (e) {
+            showToast(e.message, "error");
+        }
     }
 </script>
 </body>
