@@ -34,11 +34,9 @@ public class AssinaturasService {
 
     private LocalDate calcularProximoVencimento(int diaVencimento) {
         LocalDate hoje = LocalDate.now();
-        // Garante que o dia é válido para o mês atual
         int diaFinal = Math.min(diaVencimento, hoje.lengthOfMonth());
         LocalDate proximo = hoje.withDayOfMonth(diaFinal);
 
-        // Se a data calculada já passou, joga para o próximo mês
         if (hoje.isAfter(proximo)) {
             proximo = proximo.plusMonths(1).withDayOfMonth(Math.min(diaVencimento, proximo.plusMonths(1).lengthOfMonth()));
         }
@@ -57,7 +55,9 @@ public class AssinaturasService {
         assinatura.setDataVencimento(dto.dataVencimento());
         assinatura.setPlano(dto.plano());
         assinatura.setUsuario(usuarioLogado);
-        assinatura.setStatus(StatusEnum.EM_DIA);
+
+        // Respeita o status enviado pelo DTO; se vier nulo, assume EM_DIA
+        assinatura.setStatus(dto.status() != null ? dto.status() : StatusEnum.EM_DIA);
         assinatura.setProximoVencimento(calcularProximoVencimento(dto.dataVencimento()));
 
         return assinaturasRepository.save(assinatura);
@@ -90,11 +90,12 @@ public class AssinaturasService {
         assinatura.setDataVencimento(dto.dataVencimento());
         assinatura.setPlano(dto.plano());
 
-        // Recalcula o vencimento caso o usuário mude o dia
-        assinatura.setProximoVencimento(calcularProximoVencimento(dto.dataVencimento()));
+        // Atualiza o status conforme informado pelo usuário no formulário
+        if (dto.status() != null) {
+            assinatura.setStatus(dto.status());
+        }
 
-        // Se o usuário editar a assinatura, supomos que ele está regularizando, então volta para EM_DIA
-        assinatura.setStatus(StatusEnum.EM_DIA);
+        assinatura.setProximoVencimento(calcularProximoVencimento(dto.dataVencimento()));
 
         var assinaturaAtualizada = assinaturasRepository.save(assinatura);
         return new AssinaturasResponseDto(assinaturaAtualizada);

@@ -16,79 +16,168 @@
             --text-dim: #86868b; --border: #d2d2d7;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; transition: 0.4s; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 15px; animation: fadeInUp 0.6s ease-out; box-sizing: border-box; }
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            transition: 0.4s;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        .logo { font-size: 20px; font-weight: 800; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
         .logo span { color: var(--primary); }
 
-        .header-nav { display: flex; gap: 15px; align-items: center; overflow-x: auto; width: 100%; padding-bottom: 5px; justify-content: flex-start; }
-        .nav-link { background: none; border: none; color: var(--text-dim); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; padding: 4px 0; border-bottom: 2px solid transparent; white-space: nowrap; }
+        .header-nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            overflow-x: auto;
+            width: 100%;
+            padding: 6px 0;
+            justify-content: flex-start;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-link {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 8px 4px;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
         .nav-link:hover, .nav-link.active { color: var(--text-main); border-bottom-color: var(--primary); }
 
         .header-right { display: flex; align-items: center; gap: 12px; }
         .theme-switch {
-            position: relative; width: 46px; height: 24px; background: var(--surface); border: 1px solid var(--border);
-            border-radius: 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 4px; flex-shrink: 0;
+            position: relative; width: 50px; height: 26px; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 6px; flex-shrink: 0;
+            font-size: 12px;
         }
         .theme-switch .toggle-circle {
-            position: absolute; width: 18px; height: 18px; background: var(--primary); border-radius: 50%; transition: 0.3s; left: 3px;
+            position: absolute; width: 20px; height: 20px; background: var(--primary); border-radius: 50%; transition: 0.3s; left: 2px;
         }
-        [data-theme="light"] .theme-switch .toggle-circle { left: 23px; }
+        [data-theme="light"] .theme-switch .toggle-circle { left: 26px; }
 
-        /* Estilo da Tela de Auth */
-        .auth-container { max-width: 400px; margin: 60px auto; }
-        .auth-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
-        .auth-card h2 { margin-top: 0; font-size: 18px; margin-bottom: 20px; text-align: center; }
+        .auth-container { max-width: 400px; margin: 30px auto; }
+        .auth-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+        .auth-card h2 { margin-top: 0; font-size: 20px; margin-bottom: 20px; text-align: center; }
         .tab-auth { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
-        .tab-btn { flex: 1; background: none; border: none; padding: 10px; color: var(--text-dim); font-weight: 700; cursor: pointer; font-size: 12px; border-bottom: 2px solid transparent; }
+        .tab-btn { flex: 1; background: none; border: none; padding: 12px; color: var(--text-dim); font-weight: 700; cursor: pointer; font-size: 14px; border-bottom: 2px solid transparent; }
         .tab-btn.active { color: var(--text-main); border-bottom-color: var(--primary); }
 
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
 
-        .user-mini-profile { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .avatar-img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); background: var(--border); }
+        .user-mini-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 4px; }
+        .avatar-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); background: var(--border); flex-shrink: 0; }
 
-        .summary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .summary-box { background: var(--surface); padding: 14px; border-radius: 12px; border-left: 4px solid var(--border); }
+        /* Estilo da foto maior no perfil */
+        .profile-avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-avatar-large {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            background: var(--surface);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Ajuste do Texto Olá no Topo */
+        .greeting-text { font-size: 13px; font-weight: 400; color: var(--text-dim); }
+        .greeting-text strong { font-weight: 600; color: var(--text-main); }
+
+        .summary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .summary-box { background: var(--surface); padding: 16px 12px; border-radius: 14px; border-left: 4px solid var(--border); }
         .summary-box.debt { border-left-color: var(--warning); }
-        .summary-box label { font-size: 8px; text-transform: uppercase; color: var(--text-dim); font-weight: 700; }
-        .summary-box h2 { font-size: 18px; margin: 5px 0 0 0; font-weight: 800; word-break: break-all; }
+        .summary-box label { font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 800; letter-spacing: 0.5px; }
+        .summary-box h2 { font-size: 20px; margin: 6px 0 0 0; font-weight: 800; word-break: break-all; }
 
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 4px; font-size: 11px; color: var(--text-dim); }
-        .form-control { width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text-main); box-sizing: border-box; font-size: 14px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--text-dim); font-weight: 600; }
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 15px;
+        }
 
-        .btn-rick { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; margin-top: 8px; }
+        .btn-rick {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 15px;
+            margin-top: 8px;
+            min-height: 48px;
+        }
         .btn-rick.edit-mode { background: var(--warning); color: #000; }
 
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; }
 
-        /* Tabela Otimizada para Celular */
-        table { width: 100%; border-collapse: collapse; min-width: unset; table-layout: fixed; }
-        th { text-align: left; padding: 10px 6px; font-size: 9px; color: var(--text-dim); border-bottom: 1px solid var(--border); text-transform: uppercase; background: var(--surface); }
-        td { padding: 10px 6px; border-bottom: 1px solid var(--border); font-size: 11px; vertical-align: middle; word-break: break-word; }
+        /* Tabela Otimizada para Não Quebrar Textos em Telas de Celulares */
+        table { width: 100%; border-collapse: collapse; min-width: 320px; table-layout: auto; }
+        th { text-align: left; padding: 12px 8px; font-size: 11px; color: var(--text-dim); border-bottom: 1px solid var(--border); text-transform: uppercase; background: var(--surface); letter-spacing: 0.5px; white-space: nowrap; }
+        td { padding: 14px 8px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; font-weight: 500; }
 
-        th:nth-child(1), td:nth-child(1) { width: 28%; }
-        th:nth-child(2), td:nth-child(2) { width: 18%; }
-        th:nth-child(3), td:nth-child(3) { width: 20%; }
-        th:nth-child(4), td:nth-child(4) { width: 18%; }
-        th:nth-child(5), td:nth-child(5) { width: 16%; text-align: right; }
-
-        .status-dot { height: 5px; width: 5px; border-radius: 50%; display: inline-block; margin-right: 3px; }
+        /* Prevenção de quebra do Status */
+        .status-cell { white-space: nowrap; font-weight: 600; }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; flex-shrink: 0; }
         .dot-EM_DIA { background: var(--success); }
         .dot-ATRASADO { background: var(--primary); }
 
         .action-cell { text-align: right; white-space: nowrap; }
-        .btn-action { background: none; border: none; padding: 2px; margin-left: 2px; cursor: pointer; color: var(--text-dim); transition: 0.2s; display: inline-flex; align-items: center; vertical-align: middle; }
+        .btn-action {
+            background: none;
+            border: none;
+            padding: 6px;
+            margin-left: 2px;
+            cursor: pointer;
+            color: var(--text-dim);
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            min-width: 32px;
+            min-height: 32px;
+        }
         .btn-action:hover { color: var(--text-main); }
-        .btn-action svg { width: 14px; height: 14px; fill: currentColor; }
+        .btn-action svg { width: 18px; height: 18px; fill: currentColor; }
 
-        footer { margin-top: 25px; padding: 15px 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-dim); flex-wrap: wrap; gap: 10px; }
-        .tech-badge { background: rgba(255, 255, 255, 0.05); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); font-size: 9px; }
-        .error-msg { color: var(--primary); font-size: 11px; margin-top: 8px; text-align: center; display: none; }
+        footer { margin-top: 35px; padding: 20px 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-dim); flex-wrap: wrap; gap: 12px; }
+        .tech-badge { background: rgba(255, 255, 255, 0.05); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 10px; font-weight: 600; }
+        .error-msg { color: var(--primary); font-size: 13px; margin-top: 10px; text-align: center; display: none; }
 
         .view-section { display: none; }
         .view-section.active { display: block; }
@@ -97,21 +186,14 @@
             .container { padding: 40px 20px; }
             header { flex-wrap: nowrap; margin-bottom: 40px; }
             .header-nav { justify-content: center; width: auto; overflow-x: visible; }
-            .summary-row { gap: 15px; margin-bottom: 20px; }
-            .summary-box { padding: 16px; }
-            .summary-box h2 { font-size: 26px; }
-            .summary-box label { font-size: 10px; }
-            table { min-width: 450px; table-layout: auto; }
-            th { padding: 12px 10px; font-size: 10px; }
-            td { padding: 12px 10px; font-size: 12px; }
-            th:nth-child(1), td:nth-child(1),
-            th:nth-child(2), td:nth-child(2),
-            th:nth-child(3), td:nth-child(3),
-            th:nth-child(4), td:nth-child(4),
-            th:nth-child(5), td:nth-child(5) { width: auto; }
-            .status-dot { height: 6px; width: 6px; margin-right: 5px; }
-            .btn-action { padding: 4px; margin-left: 6px; }
-            .btn-action svg { width: 16px; height: 16px; }
+            .summary-row { gap: 20px; margin-bottom: 24px; }
+            .summary-box { padding: 20px; }
+            .summary-box h2 { font-size: 28px; }
+            .summary-box label { font-size: 11px; }
+            table { min-width: 100%; }
+            th { padding: 14px 12px; font-size: 12px; }
+            td { padding: 16px 12px; font-size: 14px; }
+            .btn-action svg { width: 20px; height: 20px; }
         }
     </style>
 </head>
@@ -153,8 +235,8 @@
             <div class="logo">RICK<span>SUBS.</span></div>
             <div class="header-right">
                 <div class="user-mini-profile" onclick="switchView('perfil')" title="Editar Perfil">
-                    <img id="headerAvatar" src="https://via.placeholder.com/30" class="avatar-img" alt="Avatar">
-                    <span id="headerName" style="font-size: 12px; font-weight: 600; display: none; @media(min-width: 500px){display:inline;}">Usuário</span>
+                    <img id="headerAvatar" src="https://via.placeholder.com/38" class="avatar-img" alt="Avatar">
+                    <span class="greeting-text">Olá, <strong id="headerName">Usuário</strong></span>
                 </div>
                 <div class="theme-switch" onclick="toggleTheme()" title="Mudar Tema"><span>🌙</span><span>☀️</span><div class="toggle-circle"></div></div>
             </div>
@@ -175,7 +257,7 @@
         <div class="card" style="padding: 0; overflow: hidden;">
             <div class="table-responsive">
                 <table>
-                    <thead><tr><th>Serviço</th><th>Venc.</th><th>Valor</th><th>Status</th><th style="text-align: right; padding-right: 6px;">Ações</th></tr></thead>
+                    <thead><tr><th>Serviço</th><th>Venc.</th><th>Valor</th><th>Status</th><th style="text-align: right; padding-right: 8px;">Ações</th></tr></thead>
                     <tbody id="tabelaCorpo"></tbody>
                 </table>
             </div>
@@ -185,10 +267,10 @@
     <!-- SEÇÃO 2: NOVO / EDITAR SERVIÇO -->
     <div id="view-cadastrar" class="view-section">
         <div class="card" style="max-width: 600px; margin: 0 auto;">
-            <h3 id="formTitle" style="margin: 0 0 20px 0; font-size: 16px;">Registrar Nova Assinatura</h3>
+            <h3 id="formTitle" style="margin: 0 0 20px 0; font-size: 18px;">Registrar Nova Assinatura</h3>
             <input type="hidden" id="assinaturaId">
             <div class="form-group"><label>Serviço</label><input type="text" id="servico" class="form-control" placeholder="Ex: Netflix"></div>
-            <div class="form-group"><label>Valor (R$)</label><input type="number" id="valor" class="form-control" placeholder="0.00"></div>
+            <div class="form-group"><label>Valor (R$)</label><input type="number" id="valor" class="form-control" step="0.01" placeholder="0.00"></div>
             <div class="form-group"><label>Vencimento</label><select id="dataVencimento" class="form-control"></select></div>
             <div class="form-group"><label>Status</label>
                 <select id="status" class="form-control">
@@ -205,19 +287,32 @@
     <!-- SEÇÃO 3: PERFIL E CONFIGURAÇÕES -->
     <div id="view-perfil" class="view-section">
         <div class="card" style="max-width: 600px; margin: 0 auto;">
-            <h3 style="margin: 0 0 20px 0; font-size: 16px;">Personalização de Perfil</h3>
+            <h3 style="margin: 0 0 20px 0; font-size: 18px;">Personalização de Perfil</h3>
+
+            <!-- Foto de Perfil Maior no Perfil -->
+            <div class="profile-avatar-container">
+                <img id="profileAvatarLarge" src="https://via.placeholder.com/90" class="profile-avatar-large" alt="Foto do Perfil">
+            </div>
+
             <div class="form-group">
                 <label>Nome de Exibição</label>
                 <input type="text" id="inputNomePerfil" class="form-control" placeholder="Seu Nome">
             </div>
+
             <div class="form-group">
-                <label>URL da Foto de Perfil (Avatar)</label>
-                <input type="text" id="inputAvatarPerfil" class="form-control" placeholder="https://exemplo.com/sua-foto.jpg">
+                <label>Enviar Foto do Dispositivo</label>
+                <input type="file" id="inputAvatarFile" class="form-control" accept="image/*" onchange="converterEPreviewFoto(event)">
             </div>
+
+            <div class="form-group">
+                <label>Ou insira URL da Foto</label>
+                <input type="text" id="inputAvatarPerfil" class="form-control" placeholder="https://exemplo.com/sua-foto.jpg" oninput="previewUrlFoto(this.value)">
+            </div>
+
             <button type="button" class="btn-rick" onclick="salvarPerfil()">Salvar Alterações</button>
             <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <span style="font-size: 12px; color: var(--text-dim);">Deseja sair da sua conta atual?</span>
-                <button type="button" class="btn-rick" style="width: auto; padding: 10px 16px; background: none; border: 1px solid var(--primary); color: var(--primary); margin-top: 0;" onclick="fazerLogout()">Sair da Conta</button>
+                <span style="font-size: 13px; color: var(--text-dim);">Deseja sair da sua conta atual?</span>
+                <button type="button" class="btn-rick" style="width: auto; padding: 10px 18px; background: none; border: 1px solid var(--primary); color: var(--primary); margin-top: 0;" onclick="fazerLogout()">Sair da Conta</button>
             </div>
         </div>
     </div>
@@ -233,6 +328,7 @@
 <script>
     const API_URL = 'http://192.168.0.3:8080';
     let editMode = false;
+    let base64TempImage = null;
 
     const iconEdit = `<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
     const iconDelete = `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`;
@@ -283,16 +379,43 @@
         const headerName = document.getElementById('headerName');
         if(headerName) headerName.innerText = nome;
         document.getElementById('headerAvatar').src = avatar;
+        document.getElementById('profileAvatarLarge').src = avatar;
 
         document.getElementById('inputNomePerfil').value = localStorage.getItem('userName') || '';
         document.getElementById('inputAvatarPerfil').value = localStorage.getItem('userAvatar') || '';
     }
 
+    function converterEPreviewFoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                base64TempImage = e.target.result;
+                document.getElementById('profileAvatarLarge').src = base64TempImage;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function previewUrlFoto(url) {
+        if(url.trim() !== '') {
+            base64TempImage = null; // limpa seleção de arquivo se digitar URL
+            document.getElementById('profileAvatarLarge').src = url;
+        }
+    }
+
     function salvarPerfil() {
         const nome = document.getElementById('inputNomePerfil').value;
-        const avatar = document.getElementById('inputAvatarPerfil').value;
+        const avatarUrl = document.getElementById('inputAvatarPerfil').value;
+
         if(nome) localStorage.setItem('userName', nome);
-        if(avatar) localStorage.setItem('userAvatar', avatar);
+
+        if(base64TempImage) {
+            localStorage.setItem('userAvatar', base64TempImage);
+        } else if(avatarUrl) {
+            localStorage.setItem('userAvatar', avatarUrl);
+        }
+
         carregarPerfilNaTela();
         switchView('dashboard');
     }
@@ -341,7 +464,7 @@
                     <td><div>${a.servico}</div></td>
                     <td>Dia ${a.dataVencimento}</td>
                     <td>R$ ${a.valor.toFixed(2)}</td>
-                    <td><span class="status-dot dot-${a.status}"></span>${statusLabel}</td>
+                    <td class="status-cell"><span class="status-dot dot-${a.status}"></span>${statusLabel}</td>
                     <td class="action-cell">
                         <button class="btn-action" onclick='prepEdit(${JSON.stringify(a)})'>${iconEdit}</button>
                         <button class="btn-action" onclick="deletar(${a.id})">${iconDelete}</button>
@@ -383,11 +506,12 @@
     }
 
     async function handleSalvar() {
+        const statusValue = document.getElementById('status').value;
         const dto = {
             servico: document.getElementById('servico').value,
             valor: parseFloat(document.getElementById('valor').value),
             dataVencimento: parseInt(document.getElementById('dataVencimento').value),
-            status: document.getElementById('status').value,
+            status: statusValue,
             plano: document.getElementById('plano').value,
             usuario: parseInt(localStorage.getItem('usuarioId')) || 1
         };
