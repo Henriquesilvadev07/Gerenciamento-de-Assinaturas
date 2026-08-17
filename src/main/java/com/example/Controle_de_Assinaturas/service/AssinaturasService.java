@@ -35,6 +35,7 @@ public class AssinaturasService {
         return assinatura;
     }
 
+
     public AssinaturasModel salvar(AssinaturasDto dto) {
         UsersModel usuarioLogado = (UsersModel) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (dto.dataVencimento() < 1 || dto.dataVencimento() > 31) {
@@ -47,6 +48,26 @@ public class AssinaturasService {
         assinatura.setDataVencimento(dto.dataVencimento());
         assinatura.setPlano(dto.plano());
         assinatura.setUsuario(usuarioLogado);
+
+        // --- CÁLCULO DO PRÓXIMO VENCIMENTO ---
+        LocalDate hoje = LocalDate.now();
+        int diaVencimento = dto.dataVencimento();
+
+        // Se o mês atual tiver menos dias que o dia escolhido (ex: dia 31 em fevereiro)
+        int ultimoDiaDoMes = hoje.lengthOfMonth();
+        int diaAjustado = Math.min(diaVencimento, ultimoDiaDoMes);
+
+        LocalDate dataCalculada = hoje.withDayOfMonth(diaAjustado);
+
+        // Se a data deste mês já passou, o próximo vencimento será no mês que vem
+        if (dataCalculada.isBefore(hoje)) {
+            LocalDate proximoMes = hoje.plusMonths(1);
+            int ultimoDiaProximoMes = proximoMes.lengthOfMonth();
+            dataCalculada = proximoMes.withDayOfMonth(Math.min(diaVencimento, ultimoDiaProximoMes));
+        }
+
+        assinatura.setProximoVencimento(dataCalculada);
+        // -------------------------------------
 
         // Se o front enviar status, usa ele. Se vier nulo, assume EM_DIA
         StatusEnum statusInicial = dto.status() != null ? dto.status() : StatusEnum.EM_DIA;
