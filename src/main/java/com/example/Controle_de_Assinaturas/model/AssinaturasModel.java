@@ -1,5 +1,6 @@
 package com.example.Controle_de_Assinaturas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,6 +35,7 @@ public class AssinaturasModel {
     @Column(nullable = false)
     private String plano;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private UsersModel usuario;
