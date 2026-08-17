@@ -713,7 +713,12 @@
     async function handleSalvar() {
         const id = document.getElementById('assinaturaId').value;
         const servico = document.getElementById('servico').value.trim();
-        const valor = parseFloat(document.getElementById('valor').value);
+
+        // Conversão de vírgula para ponto no campo valor
+        const valorRaw = document.getElementById('valor').value;
+        const valorFormatted = String(valorRaw).replace(',', '.');
+        const valor = parseFloat(valorFormatted);
+
         const dataVencimento = parseInt(document.getElementById('dataVencimento').value);
         const status = document.getElementById('status').value;
         const plano = document.getElementById('plano').value.trim();
