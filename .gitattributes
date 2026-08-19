@@ -1,2 +1,2 @@
-/mvnw text eol=lf
-*.cmd text eol=crlf
+src/main/resources/static/*.html linguist-vendored
+*.html linguist-vendored
