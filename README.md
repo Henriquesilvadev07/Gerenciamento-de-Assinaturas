@@ -1,24 +1,77 @@
-Sistema backend robusto desenvolvido para o controle financeiro inteligente de assinaturas, despesas recorrentes e serviços mensais. A aplicação automatiza a gestão do ciclo de vida dos pagamentos, calculando em tempo real o status de cada cobrança (Em dia, Atrasado ou Suspenso) com base na data de vencimento, além de consolidar métricas essenciais como o valor total das faturas e o montante acumulado em atraso para uma tomada de decisão rápida.
+# 🚀 RickSubs™ — Sistema de Gerenciamento de Assinaturas Recorrentes
 
-Funcionalidades
-Gestão Completa de Assinaturas: Cadastro, edição, listagem e exclusão de serviços, planos e custos fixos mensais.
+> Aplicação Full Stack robusta desenvolvida para controle financeiro, organização e gestão de serviços de assinatura (Netflix, Spotify, Prime Video, etc.). O projeto resolve o problema do esquecimento de cobranças recorrentes com cálculo automatizado de datas de vencimento, controle de status e painel financeiro.
 
-Cálculo Dinâmico de Status: Atualização automática e inteligente do estado da assinatura (Ativa, Vencida/Atrasada ou Suspensa) comparando a data atual com o vencimento.
+---
 
-Dashboard Financeiro Consolidado: Agregação em tempo real do valor total das faturas e do total em atraso, oferecendo visibilidade imediata da saúde financeira.
+## 🔗 Links Oficiais do Projeto
 
-Tecnologias e Ferramentas
-Java 21
-Spring Boot 3
-Spring Data JPA / Hibernate
-H2 SQL
-Lombok
+- 🌐 **Aplicação em Produção (Front-end):** [Acessar RickSubs™](https://gerenciamento-de-assinaturas.onrender.com)
+- 📑 **Documentação Interativa da API (Swagger UI):** [Acessar OpenAPI/Swagger](https://gerenciamento-de-assinaturas.onrender.com/swagger-ui.html)
 
-Front-end Integrado: Interface web limpa e responsiva utilizando HTML, CSS e JavaScript para consumo da API.
+---
 
-Boas Práticas e Arquitetura
-Arquitetura em Camadas: Separação clara de responsabilidades entre Controllers, Services e Repositories seguindo os padrões da indústria.
+## 🛠️ Tech Stack & Ferramentas
 
-Uso de DTOs (Records): Transferência de dados otimizada e imutável, garantindo maior segurança e clareza nos contratos da API.
+### **Backend**
+* **Linguagem:** Java 21 (LTS)
+* **Framework:** Spring Boot 3.x
+* **Segurança & Autenticação:** Spring Security + JWT (JSON Web Token)
+* **Persistência de Dados:** Spring Data JPA / Hibernate
+* **Validação de Dados:** Jakarta Validation (`@Valid`)
+* **Documentação de API:** OpenAPI 3 / Springdoc Swagger UI (`v2.8.5`)
 
-Código Limpo e Escalável: Estrutura preparada para expansão de regras de negócios, como notificações de vencimento e relatórios de gastos.
+### **Banco de Dados & Cloud Infrastructure**
+* **Banco de Dados:** PostgreSQL (Hospedado em nuvem)
+* **Plataforma de Deploy:** Render Cloud Platform
+* **Gerenciamento de Dependências:** Apache Maven
+
+### **Front-end**
+* **Tecnologias:** HTML5, CSS3, JavaScript Vanilla (ES6+)
+* **Comunicação:** API Fetch assíncrona com interceptação de cabeçalhos HTTP
+* **UX/UI:** Layout responsivo, suporte a Dark/Light Mode e conversão de formato de moeda brasileira (vírgula para ponto).
+
+---
+
+## ✨ Principais Funcionalidades
+
+- 🔐 **Autenticação Stateless:** Sistema completo de cadastro e login de usuários com senhas criptografadas (`BCrypt`) e sessão controlada por **Token JWT**.
+- 📊 **Dashboard Financeiro:** Somatório dinâmico do gasto mensal com assinaturas ativas e acompanhamento em tempo real de pendências.
+- 💳 **Gestão Completa de Assinaturas (CRUD):** 
+  - Cadastro de novas assinaturas associadas unicamente ao usuário autenticado.
+  - Edição de valores, nomes e datas de vencimento.
+  - Exclusão e alteração de status (Ativa / Cancelada / Pendente).
+- 📅 **Lógica Automatizada de Vencimento:** Algoritmo no Service para cálculo do próximo ciclo de cobrança (`proximoVencimento`), tratando variações de dias nos meses (28, 30 e 31 dias).
+- 🇧🇷 **Localização Numérica (Front-end):** Tratamento no cliente para permitir entrada de valores com vírgula (padrão `BR`) e conversão transparente para ponto (padrão `Double`/`BigDecimal` da API).
+
+---
+
+## 🧪 Como Testar a API via Swagger UI
+
+A API conta com documentação interativa gerada via **OpenAPI 3 / Swagger**. Você pode testar todas as rotas protegidas diretamente pelo navegador:
+
+1. Acesse o link da documentação: **[Swagger UI](https://gerenciamento-de-assinaturas.onrender.com/swagger-ui.html)**.
+2. **Registro/Login:**
+   - Expanda o grupo `Auth` e utilize o endpoint `POST /auth/register` para criar uma conta de testes (ou `POST /auth/login` se já possuir cadastro).
+   - Ao executar o login, copie o token JWT retornado no corpo da resposta (`response body`).
+3. **Autenticação da Sessão no Swagger:**
+   - Clique no botão verde **Authorize** no topo da página à direita.
+   - Cole o token JWT no campo de texto e clique em **Authorize**.
+4. **Testando Endpoints Protegidos:**
+   - Agora você pode executar requisições em `GET /assinaturas`, `POST /assinaturas`, `PUT /assinaturas/{id}` e `DELETE /assinaturas/{id}`. O Swagger enviará o token de autorização automaticamente em cada chamada.
+
+---
+
+## 🏗️ Arquitetura e Estrutura do Backend
+
+O projeto foi construído seguindo o padrão arquitetural em camadas para garantia de desacoplamento e facilidade de manutenção:
+
+```text
+src/main/java/com/example/Controle_de_Assinaturas/
+├── config/           # Configurações globais e OpenAPI/Swagger
+├── controller/       # Endpoints REST e manipulação de DTOs
+├── dto/              # Data Transfer Objects (Java Records)
+├── model/            # Entidades JPA (Usuario, Assinatura) e Enums
+├── repository/       # Mapeamento do banco de dados (Spring Data JPA)
+├── security/         # Filtros JWT, Criptografia de senhas e políticas de CORS
+└── service/          # Regras de negócio e calculadoras de vencimento
