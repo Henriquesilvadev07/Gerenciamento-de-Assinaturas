@@ -1,0 +1,2 @@
+src/main/resources/static/*.html linguist-vendored
+*.html linguist-vendored
