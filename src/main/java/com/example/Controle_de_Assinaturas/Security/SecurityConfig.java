@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                                 .requestMatchers("/error").permitAll()
+                                .requestMatchers("/api/ping").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/auth/register").permitAll()
                                 .requestMatchers("/", "*.html", "/css/**", "/ks/**").permitAll()
                                 .requestMatchers(
